@@ -40,23 +40,23 @@
 #define BLOCK_GRASS				2		//草地ID
 #define BLOCK_THRON				3		//尖刺ID
 #define BLOCK_SAVE				4		//存档点ID
-#define BLOCK_BLOODBODY			5		//带血尸体ID
+#define BLOCK_STILLBODY			5		//静止尸体ID
 
 #define BLOCK_SIZE_X			32		//方块的宽度
 #define BLOCK_SIZE_Y			32		//方块的高度
 
 
 
-#define HERO_SIZE_X				36		//主角的宽度
-#define HERO_SIZE_Y				38		//主角的高度
+#define HERO_SIZE_X				32		//主角的宽度
+#define HERO_SIZE_Y				32		//主角的高度
 #define HERO_FRAME_NUMBER		8		//主角的动画帧数量
 #define HERO_ACCELERATION		0.3		//主角加速度
 #define GRAVITION				0.6		//重力加速度
 #define HERO_MAXSPEED			6.0		//主角最大速度
 
 
-#define BUTTON_STARTGAME			1001	//开始游戏按钮ID
-#define BUTTON_HELP					1002	//游戏帮助按钮ID
+#define BUTTON_STARTGAME			0001	//开始游戏按钮ID
+#define BUTTON_HELP					0002	//游戏帮助按钮ID
 #define BUTTON_STARTGAME_WIDTH		147		//开始游戏按钮宽度
 #define BUTTON_STARTGAME_HEIGHT		60		//开始游戏按钮高度
 

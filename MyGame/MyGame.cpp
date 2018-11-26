@@ -26,6 +26,7 @@ HBITMAP bmp_BlockDirt;  //泥土图像
 HBITMAP bmp_BlockGrass;  //草地图像
 HBITMAP bmp_BlockThorn;	//尖刺图像
 HBITMAP bmp_BlockSave;	//存档点图像
+HBITMAP bmp_BlockSaveOn;//触发存档点图像
 HBITMAP bmp_BloodBody;	//带血尸体图像
 
 Stage* currentStage = NULL; //当前场景状态
@@ -224,12 +225,13 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_Background = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BG));
 	bmp_StartButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_START));
 	bmp_Hero = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_HERO));
-	bmp_HelpButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_HELP));
+	bmp_HelpButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_START));
 	bmp_BlockDirt= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_DIRT));
 	bmp_BlockGrass = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GRASS));
 	bmp_BlockThorn = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_THORN));
 	bmp_BloodBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BLOODBODY));
 	bmp_BlockSave = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SAVE));
+	bmp_BlockSaveOn = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SAVEON));
 
 	//添加按钮
 
@@ -425,7 +427,7 @@ void InitButton(HWND hWnd, int stageID)
 	for (int i = 0; i < buttons.size(); i++)
 	{
 		Button* button = buttons[i];
-		if (button->buttonID / 1000 - 1 == stageID)
+		if (button->buttonID / 1000  == stageID)
 		{
 			button->visible = true;
 		}
@@ -443,7 +445,7 @@ void InitBlock(HWND hWnd, int stageID)
 	for (int i = 0; i < blocks.size(); i++)
 	{
 		Block* block = blocks[i];
-		if (block->blockID / 1000 - 1 == stageID)
+		if (block->blockID / 1000  == stageID)
 		{
 			block->visible = true;
 		}
@@ -477,42 +479,48 @@ void InitMap(HWND hWnd, int stageID)
 		case STAGE_1:
 		{
 			Block* dirt; Block*thorn; Block*savepoint;
-			for (int i = 0; i < 25; i++)
+			for (int i = 0; i < 35; i++)
 			{
 				dirt = new Block;
-				dirt = CreateBlock(2000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 + i * BLOCK_SIZE_X, 350);
+				dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 + i * BLOCK_SIZE_X, 350);
 				blocks.push_back(dirt);
 			}
 
 			dirt = new Block;
-			dirt = CreateBlock(2000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 100, 350 - BLOCK_SIZE_Y);
+			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 100, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(dirt);
 
 			dirt = new Block;
-			dirt = CreateBlock(2000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 500, 360 - BLOCK_SIZE_Y - HERO_SIZE_Y);
+			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 500, 360 - BLOCK_SIZE_Y - HERO_SIZE_Y);
 			blocks.push_back(dirt);
 
 			dirt = new Block;
-			dirt = CreateBlock(2000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 300 - 2 * BLOCK_SIZE_Y);
+			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 300 - 2 * BLOCK_SIZE_Y);
 			blocks.push_back(dirt);
 
 			dirt = new Block;
-			dirt = CreateBlock(2000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 300 - 3 * BLOCK_SIZE_Y);
+			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 300 - 3 * BLOCK_SIZE_Y);
 			blocks.push_back(dirt);
 
 			thorn = new Block;
-			thorn = CreateBlock(2000 + BLOCK_THRON, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 24 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
+			thorn = CreateBlock(1000 + BLOCK_THRON, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 24 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(thorn);
 
 			savepoint = new Block;
-			savepoint = CreateBlock(2000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 400, 0);
+			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 400, 0);
 			blocks.push_back(savepoint);
 
 			CurrentSave = savepoint;//保存初始存档点
 
 			savepoint = new Block;
-			savepoint = CreateBlock(2000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 350 - BLOCK_SIZE_Y);
+			savepoint->turnon = true;
+
+			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
+
+			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 350 - BLOCK_SIZE_Y);
+			blocks.push_back(savepoint);
+
 			break;
 		}
 		case STAGE_HELP:
@@ -602,7 +610,6 @@ void TrapDetect(HWND hwnd)
 	int blockX = 0, blockY = 0;
 
 
-	//方块检测
 	for (int i = 0; i < blocks.size(); i++)
 	{
 		Block* block = blocks[i];
@@ -617,7 +624,8 @@ void TrapDetect(HWND hwnd)
 						&& abs(herocenterY - blockY) < block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
 					{
 						Block*body = NULL;
-						body = CreateBlock(2000 + BLOCK_BLOODBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
+						body = CreateBlock(1000 + BLOCK_STILLBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
+						body->visible = true;
 						blocks.push_back(body);
 						delete theHero;
 						theHero = NULL;
@@ -655,6 +663,9 @@ bool CollitionDetect(HWND hwnd)
 					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
 						&& abs(herocenterY - blockY) < block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
 					{
+						CurrentSave->img = bmp_BlockSave;
+						CurrentSave->turnon = false;
+						block->img = bmp_BlockSaveOn;
 						block->turnon = true;
 						CurrentSave = block;
 					}
@@ -749,13 +760,14 @@ void UpdateHero(HWND hWnd)
 		
 		
 		//主角动画
+		/*
 		int centerX = theHero->x + HERO_SIZE_X / 2;
 		int centerY = theHero->y + HERO_SIZE_Y / 2;
 
 		double dirX = mouseX - centerX;
 		double dirY = mouseY - centerY;
 		theHero->frame = GetHeroFrame(dirX, dirY);
-
+		*/
 
 		//超出地图边界
 		if (theHero->y > WINDOW_HEIGHT)
@@ -768,7 +780,7 @@ void UpdateHero(HWND hWnd)
 
 
 // 计算主角的当前帧数
-int GetHeroFrame(double dirX, double dirY)
+/*int GetHeroFrame(double dirX, double dirY)
 {
 	double dirLen = sqrt(dirX * dirX + dirY * dirY);
 	if (dirLen == 0)return 0;
@@ -785,6 +797,7 @@ int GetHeroFrame(double dirX, double dirY)
 
 	return frame;
 }
+*/
 
 
 
@@ -861,7 +874,7 @@ void Paint(HWND hWnd)
 				TransparentBlt(
 					hdc_memBuffer, theHero->x, theHero->y,
 					HERO_SIZE_X, HERO_SIZE_Y,
-					hdc_loadBmp, 0, HERO_SIZE_Y * theHero->frame, HERO_SIZE_X, HERO_SIZE_Y,
+					hdc_loadBmp, 0, 0, HERO_SIZE_X, HERO_SIZE_Y,
 					RGB(255, 255, 255)
 				);
 			}

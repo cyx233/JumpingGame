@@ -157,17 +157,18 @@
     <ResourceCompile Include="JumpingGame.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="bmp\apple.bmp" />
-    <Image Include="bmp\dirt.bmp" />
-    <Image Include="bmp\freezed.bmp" />
-    <Image Include="bmp\grass_side.bmp" />
-    <Image Include="bmp\thorn.bmp" />
+    <Image Include="res\apple.bmp" />
+    <Image Include="res\apple_golden.bmp" />
+    <Image Include="res\bed_head_side.bmp" />
     <Image Include="res\bg.bmp" />
-    <Image Include="res\bitmap3.bmp" />
+    <Image Include="res\bloodbody.bmp" />
+    <Image Include="res\dirt.bmp" />
+    <Image Include="res\freezed.bmp" />
+    <Image Include="res\grass_side.bmp" />
     <Image Include="res\icon.ico" />
     <Image Include="res\slime.bmp" />
     <Image Include="res\start.bmp" />
-    <Image Include="res\wall-e.bmp" />
+    <Image Include="res\thorn.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
