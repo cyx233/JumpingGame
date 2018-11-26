@@ -33,10 +33,11 @@
 #define STAGE_1					1		//第一个游戏场景的ID
 #define STAGE_HELP				2		//帮助场景ID
 
-#define BLOCK_DIRT				1		//泥土
-#define BLOCK_GRASS				2		//草地
-#define BLOCK_SIZE_X			32		//砖块的宽度
-#define BLOCK_SIZE_Y			32		//砖块的高度
+#define BLOCK_DIRT				1		//泥土ID
+#define BLOCK_GRASS				2		//草地ID
+#define BLOCK_THRON				3		//尖刺ID
+#define BLOCK_SIZE_X			32		//方块的宽度
+#define BLOCK_SIZE_Y			32		//方块的高度
 
 #define HERO_SIZE_X				36		//主角的宽度
 #define HERO_SIZE_Y				38		//主角的高度
@@ -97,7 +98,8 @@ struct Hero
 struct Block
 {
 	int blockID;	//方块ID  (stageID)*1000+按钮种类序号
-	bool visible;	//方块是否可见
+	bool visible		//方块是否可见
+	bool turnon;	//方块是否触发
 	HBITMAP img;	//图片
 	int x;			//坐标x
 	int y;			//坐标y
