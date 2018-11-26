@@ -1,20 +1,21 @@
-#pragma region Í·ÎÄ¼şÒıÓÃ
+#pragma region å¤´æ–‡ä»¶å¼•ç”¨
 
-// Windows Í·ÎÄ¼ş: 
+// Windows å¤´æ–‡ä»¶: 
 #include <windows.h>
 
-// C ÔËĞĞÊ±Í·ÎÄ¼ş
+
+// C è¿è¡Œæ—¶å¤´æ–‡ä»¶
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
 
-// ×ÊÔ´Í·ÎÄ¼ş
+// èµ„æºå¤´æ–‡ä»¶
 #include "resource.h"
 #pragma comment(lib, "Msimg32.lib")
 
 
-//ÆäËûÍ·ÎÄ¼ş
+//å…¶ä»–å¤´æ–‡ä»¶
 #include <vector>
 #include <math.h>
 
@@ -22,157 +23,157 @@
 #pragma endregion
 
 
-#pragma region ºê¶¨Òå
+#pragma region å®å®šä¹‰
 
-#define WINDOW_WIDTH			1280	//ÓÎÏ·´°¿Ú¿í¶È
-#define WINDOW_HEIGHT			720		//ÓÎÏ·´°¿Ú¸ß¶È
-#define WINDOW_TITLEBARHEIGHT	32		//±êÌâÀ¸¸ß¶È
+#define WINDOW_WIDTH			1280	//æ¸¸æˆçª—å£å®½åº¦
+#define WINDOW_HEIGHT			720		//æ¸¸æˆçª—å£é«˜åº¦
+#define WINDOW_TITLEBARHEIGHT	32		//æ ‡é¢˜æ é«˜åº¦
 
-#define STAGE_STARTMENU			0		//¿ªÊ¼»­ÃæµÄID
-#define STAGE_1					1		//µÚÒ»¸öÓÎÏ·³¡¾°µÄID
-#define STAGE_HELP				2		//°ïÖú³¡¾°ID
+#define STAGE_STARTMENU			0		//å¼€å§‹ç”»é¢çš„ID
+#define STAGE_1					1		//ç¬¬ä¸€ä¸ªæ¸¸æˆåœºæ™¯çš„ID
+#define STAGE_HELP				2		//å¸®åŠ©åœºæ™¯ID
 
-#define BLOCK_DIRT				1		//ÄàÍÁ
-#define BLOCK_GRASS				2		//²İµØ
-#define BLOCK_SIZE_X			32		//×©¿éµÄ¿í¶È
-#define BLOCK_SIZE_Y			32		//×©¿éµÄ¸ß¶È
+#define BLOCK_DIRT				1		//æ³¥åœŸ
+#define BLOCK_GRASS				2		//è‰åœ°
+#define BLOCK_SIZE_X			32		//ç –å—çš„å®½åº¦
+#define BLOCK_SIZE_Y			32		//ç –å—çš„é«˜åº¦
 
-#define HERO_SIZE_X				36		//Ö÷½ÇµÄ¿í¶È
-#define HERO_SIZE_Y				38		//Ö÷½ÇµÄ¸ß¶È
-#define HERO_FRAME_NUMBER		8		//Ö÷½ÇµÄ¶¯»­Ö¡ÊıÁ¿
-#define HERO_ACCELERATION		0.3		//Ö÷½Ç¼ÓËÙ¶È
-#define GRAVITION				0.6		//ÖØÁ¦¼ÓËÙ¶È
-#define HERO_MAXSPEED			6.0		//Ö÷½Ç×î´óËÙ¶È
+#define HERO_SIZE_X				36		//ä¸»è§’çš„å®½åº¦
+#define HERO_SIZE_Y				38		//ä¸»è§’çš„é«˜åº¦
+#define HERO_FRAME_NUMBER		8		//ä¸»è§’çš„åŠ¨ç”»å¸§æ•°é‡
+#define HERO_ACCELERATION		0.3		//ä¸»è§’åŠ é€Ÿåº¦
+#define GRAVITION				0.6		//é‡åŠ›åŠ é€Ÿåº¦
+#define HERO_MAXSPEED			6.0		//ä¸»è§’æœ€å¤§é€Ÿåº¦
 
-#define BUTTON_STARTGAME			1001	//¿ªÊ¼ÓÎÏ·°´Å¥ID
-#define BUTTON_HELP					1002	//ÓÎÏ·°ïÖú°´Å¥ID
-#define BUTTON_STARTGAME_WIDTH		147		//¿ªÊ¼ÓÎÏ·°´Å¥¿í¶È
-#define BUTTON_STARTGAME_HEIGHT		60		//¿ªÊ¼ÓÎÏ·°´Å¥¸ß¶È
+#define BUTTON_STARTGAME			1001	//å¼€å§‹æ¸¸æˆæŒ‰é’®ID
+#define BUTTON_HELP					1002	//æ¸¸æˆå¸®åŠ©æŒ‰é’®ID
+#define BUTTON_STARTGAME_WIDTH		147		//å¼€å§‹æ¸¸æˆæŒ‰é’®å®½åº¦
+#define BUTTON_STARTGAME_HEIGHT		60		//å¼€å§‹æ¸¸æˆæŒ‰é’®é«˜åº¦
 
-#define TIMER_GAMETIMER				1	//ÓÎÏ·µÄÄ¬ÈÏ¼ÆÊ±Æ÷ID
-#define TIMER_GAMETIMER_ELAPSE		10	//Ä¬ÈÏ¼ÆÊ±Æ÷Ë¢ĞÂ¼ä¸ôµÄºÁÃëÊı
+#define TIMER_GAMETIMER				1	//æ¸¸æˆçš„é»˜è®¤è®¡æ—¶å™¨ID
+#define TIMER_GAMETIMER_ELAPSE		10	//é»˜è®¤è®¡æ—¶å™¨åˆ·æ–°é—´éš”çš„æ¯«ç§’æ•°
 
 
 #pragma endregion
 
 
-#pragma region ½á¹¹ÌåÉùÃ÷
+#pragma region ç»“æ„ä½“å£°æ˜
 
-// ³¡¾°½á¹¹Ìå
+// åœºæ™¯ç»“æ„ä½“
 struct Stage
 {
-	int stageID;		//³¡¾°±àºÅ
-	HBITMAP bg;			//±³¾°Í¼Æ¬
-	int timeCountDown;	//ÓÎÏ·Ê±¼äµ¹¼ÆÊ±
-	bool timerOn;		//¼ÆÊ±Æ÷ÊÇ·ñÔËĞĞ£¨ÓÎÏ·ÊÇ·ñ±»ÔİÍ££©
+	int stageID;		//åœºæ™¯ç¼–å·
+	HBITMAP bg;			//èƒŒæ™¯å›¾ç‰‡
+	int timeCountDown;	//æ¸¸æˆæ—¶é—´å€’è®¡æ—¶
+	bool timerOn;		//è®¡æ—¶å™¨æ˜¯å¦è¿è¡Œï¼ˆæ¸¸æˆæ˜¯å¦è¢«æš‚åœï¼‰
 
 };
 
 
-// °´Å¥½á¹¹Ìå
+// æŒ‰é’®ç»“æ„ä½“
 struct Button
 {
-	int buttonID;	//°´Å¥ID (stageID)*1000+°´Å¥ÖÖÀàĞòºÅ
-	bool visible;	//°´Å¥ÊÇ·ñ¿É¼û
-	HBITMAP img;	//Í¼Æ¬
-	int x;			//×ø±êx
-	int y;			//×ø±êy
-	int width;		//¿í¶È
-	int height;		//¸ß¶È
+	int buttonID;	//æŒ‰é’®ID (stageID)*1000+æŒ‰é’®ç§ç±»åºå·
+	bool visible;	//æŒ‰é’®æ˜¯å¦å¯è§
+	HBITMAP img;	//å›¾ç‰‡
+	int x;			//åæ ‡x
+	int y;			//åæ ‡y
+	int width;		//å®½åº¦
+	int height;		//é«˜åº¦
 };
 
-// Ö÷½Ç½á¹¹Ìå
+// ä¸»è§’ç»“æ„ä½“
 struct Hero
 {
-	HBITMAP img;	//Í¼Æ¬
-	int frame;		//µ±Ç°ÏÔÊ¾µÄÖ¡Êı
-	int x;			//×ø±êx
-	int y;			//×ø±êy
-	double vx;		//ËÙ¶Èx
-	double vy;		//ËÙ¶Èy
+	HBITMAP img;	//å›¾ç‰‡
+	int frame;		//å½“å‰æ˜¾ç¤ºçš„å¸§æ•°
+	int x;			//åæ ‡x
+	int y;			//åæ ‡y
+	double vx;		//é€Ÿåº¦x
+	double vy;		//é€Ÿåº¦y
 };
 
-//·½¿é½á¹¹Ìå
+//æ–¹å—ç»“æ„ä½“
 struct Block
 {
-	int blockID;	//·½¿éID  (stageID)*1000+°´Å¥ÖÖÀàĞòºÅ
-	bool visible;	//·½¿éÊÇ·ñ¿É¼û
-	HBITMAP img;	//Í¼Æ¬
-	int x;			//×ø±êx
-	int y;			//×ø±êy
-	int width;		//¿í¶È
-	int height;		//¸ß¶È
+	int blockID;	//æ–¹å—ID  (stageID)*1000+æŒ‰é’®ç§ç±»åºå·
+	bool visible;	//æ–¹å—æ˜¯å¦å¯è§
+	HBITMAP img;	//å›¾ç‰‡
+	int x;			//åæ ‡x
+	int y;			//åæ ‡y
+	int width;		//å®½åº¦
+	int height;		//é«˜åº¦
 };
 
 
 #pragma endregion
 
 
-#pragma region ÊÂ¼ş´¦Àíº¯ÊıÉùÃ÷
+#pragma region äº‹ä»¶å¤„ç†å‡½æ•°å£°æ˜
 
 
-// ³õÊ¼»¯ÓÎÏ·´°Ìåº¯Êı
+// åˆå§‹åŒ–æ¸¸æˆçª—ä½“å‡½æ•°
 void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-// ¼üÅÌ°´ÏÂÊÂ¼ş´¦Àíº¯Êı
+// é”®ç›˜æŒ‰ä¸‹äº‹ä»¶å¤„ç†å‡½æ•°
 void KeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-// ¼üÅÌËÉ¿ªÊÂ¼ş´¦Àíº¯Êı
+// é”®ç›˜æ¾å¼€äº‹ä»¶å¤„ç†å‡½æ•°
 void KeyUp(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-// Êó±êÒÆ¶¯ÊÂ¼ş´¦Àíº¯Êı
+// é¼ æ ‡ç§»åŠ¨äº‹ä»¶å¤„ç†å‡½æ•°
 void MouseMove(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-// Êó±ê×ó¼ü°´ÏÂÊÂ¼ş´¦Àíº¯Êı
+// é¼ æ ‡å·¦é”®æŒ‰ä¸‹äº‹ä»¶å¤„ç†å‡½æ•°
 void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-// Êó±ê×ó¼üËÉ¿ªÊÂ¼ş´¦Àíº¯Êı
+// é¼ æ ‡å·¦é”®æ¾å¼€äº‹ä»¶å¤„ç†å‡½æ•°
 void LButtonUp(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-// ¶¨Ê±Æ÷ÊÂ¼ş´¦Àíº¯Êı
+// å®šæ—¶å™¨äº‹ä»¶å¤„ç†å‡½æ•°
 void TimerUpdate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 #pragma endregion
 
 
-#pragma region ÆäËüÓÎÏ·×´Ì¬´¦Àíº¯ÊıÉùÃ÷
+#pragma region å…¶å®ƒæ¸¸æˆçŠ¶æ€å¤„ç†å‡½æ•°å£°æ˜
 
-// Ìí¼Ó°´Å¥º¯Êı
+// æ·»åŠ æŒ‰é’®å‡½æ•°
 Button* CreateButton(int buttonID, HBITMAP img, int width, int height, int x, int y);
 
-//Ìí¼Ó·½¿éº¯Êı
+//æ·»åŠ æ–¹å—å‡½æ•°
 Block* CreateBlock(int blockID, HBITMAP img, int width, int height, int x, int y);
 
-// Ìí¼ÓÖ÷½Çº¯Êı
+// æ·»åŠ ä¸»è§’å‡½æ•°
 Hero* CreateHero(HBITMAP img, int x, int y);
 
-// ³õÊ¼»¯³¡¾°º¯Êı
+// åˆå§‹åŒ–åœºæ™¯å‡½æ•°
 void InitStage(HWND hWnd, int stageID);
 
-// ³õÊ¼»¯°´Å¥º¯Êı
+// åˆå§‹åŒ–æŒ‰é’®å‡½æ•°
 void InitButton(HWND hWnd, int stageID);
 
-// ³õÊ¼»¯·½¿éº¯Êı
+// åˆå§‹åŒ–æ–¹å—å‡½æ•°
 void InitBlock(HWND hWnd, int stageID);
 
-// ³õÊ¼»¯µØÍ¼º¯Êı
+// åˆå§‹åŒ–åœ°å›¾å‡½æ•°
 void InitMap(HWND hWnd, int stageID);
 
-// Ë¢ĞÂÖ÷½Ç×´Ì¬º¯Êı
+// åˆ·æ–°ä¸»è§’çŠ¶æ€å‡½æ•°
 void UpdateHero(HWND hWnd);
 
-// ¼ÆËãÖ÷½ÇµÄµ±Ç°Ö¡Êı
+// è®¡ç®—ä¸»è§’çš„å½“å‰å¸§æ•°
 int GetHeroFrame(double dirX, double dirY);
 
-// Åö×²¼ì²âº¯Êı
+// ç¢°æ’æ£€æµ‹å‡½æ•°
 bool CollitionDetect(HWND hWnd);
 
 #pragma endregion
 
 
-#pragma region »æÍ¼º¯ÊıÉùÃ÷
+#pragma region ç»˜å›¾å‡½æ•°å£°æ˜
 
-// »æÍ¼º¯Êı
+// ç»˜å›¾å‡½æ•°
 void Paint(HWND hWnd);
 
 #pragma endregion
