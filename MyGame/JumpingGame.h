@@ -1,4 +1,4 @@
-#pragma region 头文件引用
+﻿#pragma region 头文件引用
 
 // Windows 头文件: 
 #include <windows.h>
@@ -29,15 +29,23 @@
 #define WINDOW_HEIGHT			720		//游戏窗口高度
 #define WINDOW_TITLEBARHEIGHT	32		//标题栏高度
 
+
 #define STAGE_STARTMENU			0		//开始画面的ID
 #define STAGE_1					1		//第一个游戏场景的ID
 #define STAGE_HELP				2		//帮助场景ID
 
+
+
 #define BLOCK_DIRT				1		//泥土ID
 #define BLOCK_GRASS				2		//草地ID
 #define BLOCK_THRON				3		//尖刺ID
+#define BLOCK_SAVE				4		//存档点ID
+#define BLOCK_BLOODBODY			5		//带血尸体ID
+
 #define BLOCK_SIZE_X			32		//方块的宽度
 #define BLOCK_SIZE_Y			32		//方块的高度
+
+
 
 #define HERO_SIZE_X				36		//主角的宽度
 #define HERO_SIZE_Y				38		//主角的高度
@@ -46,10 +54,12 @@
 #define GRAVITION				0.6		//重力加速度
 #define HERO_MAXSPEED			6.0		//主角最大速度
 
+
 #define BUTTON_STARTGAME			1001	//开始游戏按钮ID
 #define BUTTON_HELP					1002	//游戏帮助按钮ID
 #define BUTTON_STARTGAME_WIDTH		147		//开始游戏按钮宽度
 #define BUTTON_STARTGAME_HEIGHT		60		//开始游戏按钮高度
+
 
 #define TIMER_GAMETIMER				1	//游戏的默认计时器ID
 #define TIMER_GAMETIMER_ELAPSE		10	//默认计时器刷新间隔的毫秒数
@@ -98,7 +108,7 @@ struct Hero
 struct Block
 {
 	int blockID;	//方块ID  (stageID)*1000+按钮种类序号
-	bool visible		//方块是否可见
+	bool visible;		//方块是否可见
 	bool turnon;	//方块是否触发
 	HBITMAP img;	//图片
 	int x;			//坐标x
@@ -138,7 +148,7 @@ void TimerUpdate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 #pragma endregion
 
 
-#pragma region 其它游戏状态处理函数声明
+#pragma region 添加结构体函数声明
 
 // 添加按钮函数
 Button* CreateButton(int buttonID, HBITMAP img, int width, int height, int x, int y);
@@ -148,6 +158,12 @@ Block* CreateBlock(int blockID, HBITMAP img, int width, int height, int x, int y
 
 // 添加主角函数
 Hero* CreateHero(HBITMAP img, int x, int y);
+
+
+#pragma endregion
+
+
+#pragma region 初始化函数声明
 
 // 初始化场景函数
 void InitStage(HWND hWnd, int stageID);
@@ -161,6 +177,10 @@ void InitBlock(HWND hWnd, int stageID);
 // 初始化地图函数
 void InitMap(HWND hWnd, int stageID);
 
+#pragma endregion
+
+
+#pragma region 主角函数声明
 // 刷新主角状态函数
 void UpdateHero(HWND hWnd);
 
@@ -169,6 +189,9 @@ int GetHeroFrame(double dirX, double dirY);
 
 // 碰撞检测函数
 bool CollitionDetect(HWND hWnd);
+
+//陷阱检测函数
+void TrapDetect(HWND hWnd);
 
 #pragma endregion
 

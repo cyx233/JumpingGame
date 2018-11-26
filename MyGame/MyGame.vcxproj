@@ -157,8 +157,11 @@
     <ResourceCompile Include="JumpingGame.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="bmp\apple.bmp" />
     <Image Include="bmp\dirt.bmp" />
+    <Image Include="bmp\freezed.bmp" />
     <Image Include="bmp\grass_side.bmp" />
+    <Image Include="bmp\thorn.bmp" />
     <Image Include="res\bg.bmp" />
     <Image Include="res\bitmap3.bmp" />
     <Image Include="res\icon.ico" />

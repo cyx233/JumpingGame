@@ -45,9 +45,6 @@
     <Image Include="res\icon.ico">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bitmap3.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
     <Image Include="res\slime.bmp">
       <Filter>资源文件</Filter>
     </Image>
@@ -55,6 +52,18 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="bmp\grass_side.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\bitmap3.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bmp\thorn.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bmp\freezed.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bmp\apple.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>
