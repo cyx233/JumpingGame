@@ -40,10 +40,14 @@
 #define BLOCK_GRASS			2		//草地ID
 #define BLOCK_THORN			3		//尖刺ID
 #define BLOCK_FIRE			4		//火焰ID
+#define BLOCK_ICE			5		//冰焰ID
 
-#define BLOCK_SAVE			5		//存档点ID
-#define BLOCK_STILLBODY		6		//静止尸体ID
-#define BLOCK_BURNEDBODY	7		//烧毁尸体ID
+#define BLOCK_SAVE			6		//存档点ID
+#define BLOCK_MOVABLEBODY	7		//可移动尸体ID
+#define BLOCK_FREEZE		8		//冰冻状态ID
+#define BLOCK_STILLBODY		9		//静止尸体ID
+#define BLOCK_BURNEDBODY	10		//烧毁尸体ID
+
 
 #define BLOCK_SIZE_X			32		//方块的宽度
 #define BLOCK_SIZE_Y			32		//方块的高度
@@ -118,6 +122,8 @@ struct Block
 	int y;			//坐标y
 	int width;		//宽度
 	int height;		//高度
+	double vx;		//横坐标速度
+	double vy;		//纵坐标速度
 };
 
 
@@ -185,20 +191,24 @@ void InitMap(HWND hWnd, int stageID);
 
 #pragma region 主角函数声明
 
-//刷新环境状态函数
-void UpdateSurround(HWND hWnd);
-
 // 刷新主角状态函数
 void UpdateHero(HWND hWnd);
-
-// 计算主角的当前帧数
-int GetHeroFrame(double dirX, double dirY);
 
 // 碰撞检测函数
 bool CollitionDetect(HWND hWnd);
 
 //陷阱检测函数
 void TrapDetect(HWND hWnd);
+
+#pragma endregion
+
+
+#pragma region 环境状态函数
+
+void UpdateBody(HWND hWnd, Block*block);	//刷新尸体状态函数
+void UpdateSurround(HWND hWnd);				//刷新环境状态函数
+void BodyTrapDetect(HWND hWnd,Block*body);	//尸体陷阱检测
+bool BodyCollitionDetect(HWND hwnd, Block*body);//尸体碰撞检测
 
 #pragma endregion
 

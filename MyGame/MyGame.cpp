@@ -26,14 +26,16 @@ HBITMAP bmp_HelpButton; //帮助按钮图像
 HBITMAP bmp_Hero; //主角图像
 
 HBITMAP bmp_BlockDirt;  //泥土图像
-HBITMAP bmp_BlockGrass;  //草地图像
+HBITMAP bmp_BlockGrass; //草地图像
 HBITMAP bmp_BlockSave;	//存档点图像
 
-HBITMAP bmp_BlockThorn;	//尖刺图像
+HBITMAP bmp_BlockThorn;		//尖刺图像
 HBITMAP bmp_BlockFire;		//火焰图像
+HBITMAP bmp_BlockIce;		//冰焰图像
 
 HBITMAP bmp_BloodBody;	//带血尸体图像
 HBITMAP bmp_BurnedBody; //燃烧尸体图像
+HBITMAP bmp_FreezedBody;//冰冻尸体图像
 
 Stage* currentStage = NULL; //当前场景状态
 Block* CurrentSave = NULL;	//当前存档点
@@ -239,6 +241,11 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_BlockSave = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SAVE));
 	bmp_BlockFire = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_FIRE));
 	bmp_BurnedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BURNEDBODY));
+	bmp_BlockIce = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_ICE));
+	bmp_FreezedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_FREEZED));
+
+
+
 	//添加按钮
 
 	Button* startButton = CreateButton(BUTTON_STARTGAME, bmp_StartButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 300, 300);
@@ -417,6 +424,7 @@ Block* CreateBlock(int blockID, HBITMAP img, int width, int height, int x, int y
 	block->y = y;
 	block->visible = false;
 	block->frame = 0;
+	block->vx = 0;
 	return block;
 }
 
@@ -477,6 +485,7 @@ void InitMap(HWND hWnd, int stageID)
 	vector<Block*>().swap(blocks);
 
 	//添加方块
+	Block* dirt, *thorn, *savepoint, *fire, *ice;
 	switch (stageID)
 	{
 		case STAGE_STARTMENU:
@@ -485,7 +494,6 @@ void InitMap(HWND hWnd, int stageID)
 		}
 		case STAGE_1:
 		{
-			Block* dirt,*thorn,*savepoint,*fire;
 			for (int i = 0; i < 35; i++)
 			{
 				dirt = new Block;
@@ -534,6 +542,9 @@ void InitMap(HWND hWnd, int stageID)
 
 			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 600, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
+
+			ice = CreateBlock(1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 700, 350 - BLOCK_SIZE_Y);
+			blocks.push_back(ice);
 			break;
 		}
 		case STAGE_HELP:
@@ -612,7 +623,7 @@ void InitStage(HWND hWnd, int stageID)
 
 
 
-#pragma region 主角相关函数
+#pragma region 主角状态函数
 
 
 //陷阱检测
@@ -645,6 +656,15 @@ void TrapDetect(HWND hwnd)
 					case BLOCK_FIRE://火焰方块判定
 					{
 						body = CreateBlock(1000 + BLOCK_BURNEDBODY, bmp_BurnedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
+						body->visible = true;
+						blocks.push_back(body);
+						delete theHero;
+						theHero = NULL;
+						return;
+					}
+					case BLOCK_ICE://冰焰方块判定
+					{
+						body = CreateBlock(1000 + BLOCK_FREEZE, bmp_FreezedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
 						body->visible = true;
 						blocks.push_back(body);
 						delete theHero;
@@ -698,6 +718,8 @@ bool CollitionDetect(HWND hwnd)
 					}
 					break;
 				}
+
+
 				default://一般方块判定
 				{
 					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
@@ -786,22 +808,197 @@ void UpdateHero(HWND hWnd)
 		theHero->y += (int)(theHero->vy);
 		
 		
-		//主角动画
-		/*
-		int centerX = theHero->x + HERO_SIZE_X / 2;
-		int centerY = theHero->y + HERO_SIZE_Y / 2;
-
-		double dirX = mouseX - centerX;
-		double dirY = mouseY - centerY;
-		theHero->frame = GetHeroFrame(dirX, dirY);
-		*/
-				
 		
 		//超出地图边界
 		if (theHero->y > WINDOW_HEIGHT)
 		{
 			delete theHero;
 			theHero = NULL;
+		}
+	}
+}
+
+
+#pragma endregion
+
+
+
+#pragma region 环境状态函数
+
+
+//尸体陷阱检测
+int m;
+void BodyTrapDetect(HWND hwnd,Block*body)
+{
+	int bodycenterX = body->x + HERO_SIZE_X / 2;
+	int bodycenterY = body->y + HERO_SIZE_Y / 2;
+	int blockX = 0, blockY = 0;
+
+	if (body->blockID % 100 == BLOCK_FREEZE)
+	{
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			Block* block = blocks[i];
+			blockX = block->x + BLOCK_SIZE_X / 2;
+			blockY = block->y + BLOCK_SIZE_Y / 2;
+			if (block->visible)
+				if (abs(bodycenterX - blockX) <= block->width / 2 + HERO_SIZE_X / 2
+					&& abs(bodycenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
+					switch (block->blockID % 100)
+					{
+						case BLOCK_FIRE://火焰方块判定
+						{
+							body->img = bmp_BloodBody;
+							m++;
+							if (m == 10)
+								body->blockID = BLOCK_MOVABLEBODY;
+						}
+						default:
+							break;
+					}
+		}
+	}
+
+	if (body->blockID % 100 == BLOCK_MOVABLEBODY)
+	{
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			Block* block = blocks[i];
+			blockX = block->x + BLOCK_SIZE_X / 2;
+			blockY = block->y + BLOCK_SIZE_Y / 2;
+			if (block->visible)
+				if (abs(bodycenterX - blockX) <= block->width / 2 + HERO_SIZE_X / 2
+					&& abs(bodycenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
+					switch (block->blockID % 100)
+					{
+						case BLOCK_FIRE://火焰方块判定
+						{
+							body->blockID = BLOCK_BURNEDBODY;
+							return;
+						}
+						default:
+							break;
+					}
+		}
+	}
+}
+
+//尸体碰撞检测
+bool BodyCollitionDetect(HWND hwnd, Block*body)
+{
+	bool onground = false; //是否落地
+	int bodycenterX = body->x + HERO_SIZE_X / 2;
+	int bodycenterY = body->y + HERO_SIZE_Y / 2;
+	int blockX = 0, blockY = 0;
+
+
+	//方块检测
+	for (int i = 0; i < blocks.size(); i++)
+	{
+		Block* block = blocks[i];
+		if ((block->x == body->x)
+			&& (block->y == body->y))
+			if (i == blocks.size())
+				break;
+			else
+				continue;
+			
+		blockX = block->x + BLOCK_SIZE_X / 2;
+		blockY = block->y + BLOCK_SIZE_Y / 2;
+		if (block->visible)
+			switch (block->blockID % 100)
+			{
+				case BLOCK_THORN:
+					break;
+
+				case BLOCK_FIRE:
+					break;
+
+				case BLOCK_BURNEDBODY:
+					break;
+
+				case BLOCK_SAVE://存档点判定
+					break;
+
+				case BLOCK_ICE:
+					break;
+
+
+				default://一般方块判定
+				{
+					if (abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
+						&& abs(bodycenterY - blockY) < block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
+					{
+						if (block->width / 2 + HERO_SIZE_Y / 2 - abs(bodycenterY - blockY)
+							< block->height / 2 + HERO_SIZE_X / 2 - abs(bodycenterX - blockX)) //判定此次碰撞为纵向碰撞
+						{
+							if (bodycenterY < blockY) //判定从方块上方碰撞
+							{
+								while (body->y + HERO_SIZE_Y > block->y)body->y -= 1;
+								body->vy = 0;
+							}
+						}
+					}
+
+					if (body->y + HERO_SIZE_Y == block->y
+						&&abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定尸体落在方块上
+						onground = true;
+
+					if (abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
+						&& abs(bodycenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞，边界条件改变
+					{
+						if (block->width / 2 + HERO_SIZE_Y / 2 - abs(bodycenterY - blockY) >
+							block->height / 2 + HERO_SIZE_X / 2 - abs(bodycenterX - blockX)) //判定此次碰撞为横向碰撞
+						{
+							if (bodycenterX > blockX) //判定从方块右面碰撞
+							{
+								while (body->x < block->x + BLOCK_SIZE_X)body->x += 1;
+								body->vx = 0;
+							}
+							else { //判定从方块左面碰撞
+								while (body->x + HERO_SIZE_X > block->x)body->x -= 1;
+								body->vx = 0;
+							}
+						}
+					}
+				}
+			}	
+	}
+	return onground;
+}
+
+//刷新尸体
+void UpdateBody(HWND hWnd, Block*body)
+{
+	//判断陷阱
+	if ((body->blockID % 100 == BLOCK_MOVABLEBODY)
+		|| (body->blockID % 100 == BLOCK_FREEZE))
+		BodyTrapDetect(hWnd, body);
+
+	if ((body->blockID % 100 == BLOCK_MOVABLEBODY)
+		|| (body->blockID % 100 == BLOCK_FREEZE))
+	{
+
+		bool onground = BodyCollitionDetect(hWnd,body);
+
+		//移动判定
+		//y方向速度
+		 if (!onground) //重力
+			body->vy += GRAVITION;
+
+		//x方向速度
+		
+		//计算位移
+		body->x += (int)(body->vx);
+		body->y += (int)(body->vy);
+
+
+		//超出地图边界
+		if (body->y > WINDOW_HEIGHT)
+		{
+			body->blockID = BLOCK_DIRT;
+			body->visible = false;
+			body->vy = 0;
 		}
 	}
 }
@@ -838,35 +1035,29 @@ void UpdateSurround(HWND hWnd)
 					break;
 				}
 
+				case BLOCK_ICE:
+				{
+					block->frame++;
+					if (block->frame > 31)
+						block->frame = 0;
+					break;
+				}
 
+				case BLOCK_MOVABLEBODY:
+				{
+					UpdateBody(hWnd,block);
+					break;
+				}
+				case BLOCK_FREEZE:
+				{
+					UpdateBody(hWnd, block);
+					break;
+				}
 				default:
 					break;
 			}
 	}
 }
-
-
-// 计算主角的当前帧数函数
-/*int GetHeroFrame(double dirX, double dirY)
-{
-	double dirLen = sqrt(dirX * dirX + dirY * dirY);
-	if (dirLen == 0)return 0;
-	double cos = -dirY / dirLen;
-	double arc = acos(cos);
-	if (dirX < 0)arc = 2 * PI - arc;
-
-	int frame = (int)(arc / (2 * PI / HERO_FRAME_NUMBER));
-	if (frame == HERO_FRAME_NUMBER)
-		frame = 0;
-
-	if (frame < HERO_FRAME_NUMBER / 2)
-		frame = HERO_FRAME_NUMBER / 2 - frame - 1;
-
-	return frame;
-}
-*/
-
-
 
 
 #pragma endregion

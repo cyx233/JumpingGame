@@ -166,6 +166,7 @@
     <Image Include="res\fire.bmp" />
     <Image Include="res\freezed.bmp" />
     <Image Include="res\grass.bmp" />
+    <Image Include="res\ice.bmp" />
     <Image Include="res\icon.ico" />
     <Image Include="res\slime.bmp" />
     <Image Include="res\start.bmp" />
