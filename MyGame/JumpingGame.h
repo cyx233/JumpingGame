@@ -124,6 +124,7 @@ struct Block
 	int height;		//高度
 	double vx;		//横坐标速度
 	double vy;		//纵坐标速度
+	int m;
 };
 
 

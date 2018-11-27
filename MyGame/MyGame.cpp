@@ -425,6 +425,7 @@ Block* CreateBlock(int blockID, HBITMAP img, int width, int height, int x, int y
 	block->visible = false;
 	block->frame = 0;
 	block->vx = 0;
+	block->m = 0;
 	return block;
 }
 
@@ -505,9 +506,6 @@ void InitMap(HWND hWnd, int stageID)
 			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 100, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(dirt);
 
-			dirt = new Block;
-			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 500, 360 - BLOCK_SIZE_Y - HERO_SIZE_Y);
-			blocks.push_back(dirt);
 
 			dirt = new Block;
 			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 300 - 2 * BLOCK_SIZE_Y);
@@ -517,23 +515,20 @@ void InitMap(HWND hWnd, int stageID)
 			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 300 - 3 * BLOCK_SIZE_Y);
 			blocks.push_back(dirt);
 
-			thorn = new Block;
-			thorn = CreateBlock(1000 + BLOCK_THORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 24 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(thorn);
 			
-			fire = new Block;
-			fire = CreateBlock(1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(thorn);
+			dirt = new Block;
+			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 30 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
+			blocks.push_back(dirt);
 
 			savepoint = new Block;
 			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 400, 0);
 			blocks.push_back(savepoint);
 
 			CurrentSave = savepoint;//保存初始存档点
+			CurrentSave->frame = 1;
+
 
 			savepoint = new Block;
-			savepoint->frame = 1;
-
 			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
 
@@ -543,7 +538,10 @@ void InitMap(HWND hWnd, int stageID)
 			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 600, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
 
-			ice = CreateBlock(1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 700, 350 - BLOCK_SIZE_Y);
+			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 800, 350 - BLOCK_SIZE_Y);
+			blocks.push_back(savepoint);
+
+			ice = CreateBlock(1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 700, 350 - 3*BLOCK_SIZE_Y);
 			blocks.push_back(ice);
 			break;
 		}
@@ -718,7 +716,7 @@ bool CollitionDetect(HWND hwnd)
 					}
 					break;
 				}
-
+				
 
 				default://一般方块判定
 				{
@@ -827,7 +825,6 @@ void UpdateHero(HWND hWnd)
 
 
 //尸体陷阱检测
-int m;
 void BodyTrapDetect(HWND hwnd,Block*body)
 {
 	int bodycenterX = body->x + HERO_SIZE_X / 2;
@@ -849,9 +846,12 @@ void BodyTrapDetect(HWND hwnd,Block*body)
 						case BLOCK_FIRE://火焰方块判定
 						{
 							body->img = bmp_BloodBody;
-							m++;
-							if (m == 10)
+							body->m ++;
+							if (body->m == 15)
+							{
 								body->blockID = BLOCK_MOVABLEBODY;
+								body->m = 0;
+							}
 						}
 						default:
 							break;
@@ -874,6 +874,7 @@ void BodyTrapDetect(HWND hwnd,Block*body)
 						case BLOCK_FIRE://火焰方块判定
 						{
 							body->blockID = BLOCK_BURNEDBODY;
+							body->img = bmp_BurnedBody;
 							return;
 						}
 						default:
@@ -891,6 +892,28 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 	int bodycenterY = body->y + HERO_SIZE_Y / 2;
 	int blockX = 0, blockY = 0;
 
+	//尸体与主角交互
+	if (theHero != NULL)
+	{
+		int herocenterX = theHero->x + HERO_SIZE_X / 2;
+		int herocenterY = theHero->y + HERO_SIZE_Y / 2;
+		if (abs(herocenterX - bodycenterX) <= body->width / 2 + HERO_SIZE_X / 2
+			&& abs(herocenterY - bodycenterY) <= body->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
+		{
+			if (body->width / 2 + HERO_SIZE_Y / 2 - abs(herocenterY - bodycenterY) >
+				body->height / 2 + HERO_SIZE_X / 2 - abs(herocenterX - bodycenterX))//判定此次碰撞为横向碰撞
+			{
+				if (herocenterX > bodycenterX) //判定从方块右面碰撞
+				{
+					while (theHero->x <= body->x + BLOCK_SIZE_X)body->x -= 1;
+				}
+				else { //判定从方块左面碰撞
+					while (theHero->x + HERO_SIZE_X >= body->x)body->x += 1;
+				}
+				body->vx = theHero->vx;
+			}
+		}
+	}
 
 	//方块检测
 	for (int i = 0; i < blocks.size(); i++)
@@ -905,6 +928,9 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 			
 		blockX = block->x + BLOCK_SIZE_X / 2;
 		blockY = block->y + BLOCK_SIZE_Y / 2;
+
+
+
 		if (block->visible)
 			switch (block->blockID % 100)
 			{
@@ -917,7 +943,7 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 				case BLOCK_BURNEDBODY:
 					break;
 
-				case BLOCK_SAVE://存档点判定
+				case BLOCK_SAVE:
 					break;
 
 				case BLOCK_ICE:
@@ -944,20 +970,26 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 						&&abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定尸体落在方块上
 						onground = true;
 
-					if (abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
+					if (abs(bodycenterX - blockX) <= block->width / 2 + HERO_SIZE_X / 2
 						&& abs(bodycenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞，边界条件改变
 					{
 						if (block->width / 2 + HERO_SIZE_Y / 2 - abs(bodycenterY - blockY) >
 							block->height / 2 + HERO_SIZE_X / 2 - abs(bodycenterX - blockX)) //判定此次碰撞为横向碰撞
 						{
-							if (bodycenterX > blockX) //判定从方块右面碰撞
+							if (bodycenterX > blockX) //判定方块右面碰撞尸体左面
 							{
 								while (body->x < block->x + BLOCK_SIZE_X)body->x += 1;
-								body->vx = 0;
+								if (abs(body->vx) > abs(block->vx))
+									body->vx = block->vx;
+								else
+									block->vx = body->vx;
 							}
-							else { //判定从方块左面碰撞
+							else { //判定方块左面碰撞尸体右面
 								while (body->x + HERO_SIZE_X > block->x)body->x -= 1;
-								body->vx = 0;
+								if (abs(body->vx) > abs(block->vx))
+									body->vx = block->vx;
+								else
+									block->vx = body->vx;
 							}
 						}
 					}
