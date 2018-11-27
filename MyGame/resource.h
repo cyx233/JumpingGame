@@ -9,7 +9,6 @@
 #define IDB_BITMAP_SAVEON               170
 #define IDB_BITMAP_HELP                 171
 #define IDB_BITMAP_BG                   172
-#define IDB_BITMAP_BLOODODY             174
 #define IDB_BITMAP_BLOODBODY            174
 #define IDB_BITMAP_DIRT                 175
 #define IDB_BITMAP_FREEZED              176
@@ -23,7 +22,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        181
+#define _APS_NEXT_RESOURCE_VALUE        182
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110

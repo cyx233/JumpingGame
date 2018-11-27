@@ -620,8 +620,8 @@ void TrapDetect(HWND hwnd)
 			{
 				case BLOCK_THRON://尖刺方块判定
 				{
-					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
-						&& abs(herocenterY - blockY) < block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
+					if (abs(herocenterX - blockX) <= block->width / 2 + HERO_SIZE_X / 2
+						&& abs(herocenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
 					{
 						Block*body = NULL;
 						body = CreateBlock(1000 + BLOCK_STILLBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
