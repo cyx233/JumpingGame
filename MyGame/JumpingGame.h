@@ -37,10 +37,11 @@
 
 
 #define BLOCK_DIRT				1		//泥土ID
-#define BLOCK_GRASS				2		//草地ID
-#define BLOCK_THRON				3		//尖刺ID
+#define BLOCK_GRASS			2		//草地ID
+#define BLOCK_THRON			3		//尖刺ID
 #define BLOCK_SAVE				4		//存档点ID
-#define BLOCK_STILLBODY			5		//静止尸体ID
+#define BLOCK_STILLBODY		5		//静止尸体ID
+#define BLOCK_BURNEDBODY		6		//烧毁尸体ID
 
 #define BLOCK_SIZE_X			32		//方块的宽度
 #define BLOCK_SIZE_Y			32		//方块的高度
@@ -108,8 +109,8 @@ struct Hero
 struct Block
 {
 	int blockID;	//方块ID  (stageID)*1000+按钮种类序号
-	bool visible;		//方块是否可见
-	bool turnon;	//方块是否触发
+	bool visible;	//方块是否可见
+	int	frame;		//方块帧数
 	HBITMAP img;	//图片
 	int x;			//坐标x
 	int y;			//坐标y
@@ -181,6 +182,10 @@ void InitMap(HWND hWnd, int stageID);
 
 
 #pragma region 主角函数声明
+
+//刷新环境状态函数
+void UpdateSurround(HWND hWnd);
+
 // 刷新主角状态函数
 void UpdateHero(HWND hWnd);
 
