@@ -36,12 +36,14 @@
 
 
 
-#define BLOCK_DIRT				1		//泥土ID
+#define BLOCK_DIRT			1		//泥土ID
 #define BLOCK_GRASS			2		//草地ID
-#define BLOCK_THRON			3		//尖刺ID
-#define BLOCK_SAVE				4		//存档点ID
-#define BLOCK_STILLBODY		5		//静止尸体ID
-#define BLOCK_BURNEDBODY		6		//烧毁尸体ID
+#define BLOCK_THORN			3		//尖刺ID
+#define BLOCK_FIRE			4		//火焰ID
+
+#define BLOCK_SAVE			5		//存档点ID
+#define BLOCK_STILLBODY		6		//静止尸体ID
+#define BLOCK_BURNEDBODY	7		//烧毁尸体ID
 
 #define BLOCK_SIZE_X			32		//方块的宽度
 #define BLOCK_SIZE_Y			32		//方块的高度

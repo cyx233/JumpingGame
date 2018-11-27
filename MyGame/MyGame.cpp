@@ -28,12 +28,12 @@ HBITMAP bmp_Hero; //主角图像
 HBITMAP bmp_BlockDirt;  //泥土图像
 HBITMAP bmp_BlockGrass;  //草地图像
 HBITMAP bmp_BlockSave;	//存档点图像
-HBITMAP bmp_BlockSaveOn;//触发存档点图像
 
 HBITMAP bmp_BlockThorn;	//尖刺图像
 HBITMAP bmp_BlockFire;		//火焰图像
 
 HBITMAP bmp_BloodBody;	//带血尸体图像
+HBITMAP bmp_BurnedBody; //燃烧尸体图像
 
 Stage* currentStage = NULL; //当前场景状态
 Block* CurrentSave = NULL;	//当前存档点
@@ -237,9 +237,8 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_BlockThorn = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_THORN));
 	bmp_BloodBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BLOODBODY));
 	bmp_BlockSave = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SAVE));
-	bmp_BlockSaveOn = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SAVEON));
 	bmp_BlockFire = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_FIRE));
-
+	bmp_BurnedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BURNEDBODY));
 	//添加按钮
 
 	Button* startButton = CreateButton(BUTTON_STARTGAME, bmp_StartButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 300, 300);
@@ -511,11 +510,11 @@ void InitMap(HWND hWnd, int stageID)
 			blocks.push_back(dirt);
 
 			thorn = new Block;
-			thorn = CreateBlock(1000 + BLOCK_THRON, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 24 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
+			thorn = CreateBlock(1000 + BLOCK_THORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 24 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(thorn);
 			
 			fire = new Block;
-			fire = CreateBlock(1000 + BLOCK_FIRE, bmp_Blockfire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
+			fire = CreateBlock(1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(thorn);
 
 			savepoint = new Block;
@@ -530,9 +529,11 @@ void InitMap(HWND hWnd, int stageID)
 			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
 
-			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(savepoint);
+			fire = CreateBlock(1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 300, 350 - BLOCK_SIZE_Y);
+			blocks.push_back(fire);
 
+			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 600, 350 - BLOCK_SIZE_Y);
+			blocks.push_back(savepoint);
 			break;
 		}
 		case STAGE_HELP:
@@ -632,22 +633,23 @@ void TrapDetect(HWND hwnd)
 				&& abs(herocenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
 				switch (block->blockID % 100)
 				{
-					case BLOCK_THRON://尖刺方块判定
+					case BLOCK_THORN://尖刺方块判定
 					{
 						body = CreateBlock(1000 + BLOCK_STILLBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
 						body->visible = true;
 						blocks.push_back(body);
 						delete theHero;
 						theHero = NULL;
+						return;
 					}
-					break;
 					case BLOCK_FIRE://火焰方块判定
 					{
 						body = CreateBlock(1000 + BLOCK_BURNEDBODY, bmp_BurnedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
-						block.push_back(body);
+						body->visible = true;
+						blocks.push_back(body);
 						delete theHero;
 						theHero = NULL;
-						break;
+						return;
 					}
 					default:
 						break;
@@ -675,6 +677,15 @@ bool CollitionDetect(HWND hwnd)
 		if (block->visible)
 			switch (block->blockID % 100)
 			{
+				case BLOCK_THORN:
+					break;
+
+				case BLOCK_FIRE:
+					break;
+
+				case BLOCK_BURNEDBODY:
+					break;
+
 				case BLOCK_SAVE://存档点判定
 				{
 					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
@@ -682,7 +693,6 @@ bool CollitionDetect(HWND hwnd)
 					{
 						CurrentSave->img = bmp_BlockSave;
 						CurrentSave->frame = 0;
-						block->img = bmp_BlockSaveOn;
 						block->frame = 1;
 						CurrentSave = block;
 					}
@@ -796,25 +806,44 @@ void UpdateHero(HWND hWnd)
 	}
 }
 
+
 //刷新环境
-UpdateSurround(HWND hWnd)
+int n = 0;
+void UpdateSurround(HWND hWnd)
 {
-	for(int i=0;i<blocks.size();i++)
+	for (int i = 0; i < blocks.size(); i++)
 	{
-		Block*block=blocks[i];
-		if(block->visible)
-		{
-			switch(block->blockID%100)
+		Block*block = blocks[i];
+		if (block->visible)
+			switch (block->blockID % 100)
 			{
 				case BLOCK_BURNEDBODY:
 				{
-					block->frame++;
-					if(block->frame>8)
+					n++;
+					if (n == 5)
+					{
+						block->frame++;
+						n = 0;
+					}
+					if (block->frame > 10)
 						block->visible = false;
 					break;
 				}
-				
-			
+
+				case BLOCK_FIRE:
+				{
+					block->frame++;
+					if (block->frame > 31)
+						block->frame = 0;
+					break;
+				}
+
+
+				default:
+					break;
+			}
+	}
+}
 
 
 // 计算主角的当前帧数函数
@@ -876,7 +905,7 @@ void Paint(HWND hWnd)
 			TransparentBlt(
 				hdc_memBuffer, block->x, block->y,
 				block->width, block->height,
-				hdc_loadBmp, 0, 0, block->width, block->height,
+				hdc_loadBmp, 0, block->frame*BLOCK_SIZE_Y, block->width, block->height,
 				RGB(255, 255, 255)
 			);
 		}

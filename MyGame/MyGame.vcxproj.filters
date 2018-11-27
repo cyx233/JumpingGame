@@ -36,12 +36,6 @@
     <Image Include="res\icon.ico">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\apple.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="res\apple_golden.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
     <Image Include="res\bed_head_side.bmp">
       <Filter>资源文件</Filter>
     </Image>
@@ -57,9 +51,6 @@
     <Image Include="res\freezed.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\grass_side.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
     <Image Include="res\slime.bmp">
       <Filter>资源文件</Filter>
     </Image>
@@ -67,6 +58,18 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\thorn.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\burned.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\apple.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\fire.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\grass.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

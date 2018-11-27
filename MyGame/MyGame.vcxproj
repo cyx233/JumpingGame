@@ -158,13 +158,14 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\apple.bmp" />
-    <Image Include="res\apple_golden.bmp" />
     <Image Include="res\bed_head_side.bmp" />
     <Image Include="res\bg.bmp" />
     <Image Include="res\bloodbody.bmp" />
+    <Image Include="res\burned.bmp" />
     <Image Include="res\dirt.bmp" />
+    <Image Include="res\fire.bmp" />
     <Image Include="res\freezed.bmp" />
-    <Image Include="res\grass_side.bmp" />
+    <Image Include="res\grass.bmp" />
     <Image Include="res\icon.ico" />
     <Image Include="res\slime.bmp" />
     <Image Include="res\start.bmp" />
