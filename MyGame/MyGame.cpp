@@ -245,7 +245,6 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_FreezedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_FREEZED));
 
 
-
 	//添加按钮
 
 	Button* startButton = CreateButton(BUTTON_STARTGAME, bmp_StartButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 300, 300);
@@ -393,6 +392,7 @@ Hero* CreateHero(HBITMAP img, int x, int y)
 	hero->frame = 0;
 	hero->vx = 0;
 	hero->vy = 0;
+	hero->basevx = 0;
 	return hero;
 }
 
@@ -426,6 +426,7 @@ Block* CreateBlock(int blockID, HBITMAP img, int width, int height, int x, int y
 	block->frame = 0;
 	block->vx = 0;
 	block->m = 0;
+	block->n = 0;
 	return block;
 }
 
@@ -495,7 +496,7 @@ void InitMap(HWND hWnd, int stageID)
 		}
 		case STAGE_1:
 		{
-			for (int i = 0; i < 35; i++)
+			for (int i = 0; i < 32; i++)
 			{
 				dirt = new Block;
 				dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 + i * BLOCK_SIZE_X, 350);
@@ -543,6 +544,23 @@ void InitMap(HWND hWnd, int stageID)
 
 			ice = CreateBlock(1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 700, 350 - 3*BLOCK_SIZE_Y);
 			blocks.push_back(ice);
+
+
+			thorn = CreateBlock(1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 35*BLOCK_SIZE_X, 350);
+			thorn->m = 32 * BLOCK_SIZE_X; thorn->n = 38 * BLOCK_SIZE_X; thorn->vx = 2.0;
+			blocks.push_back(thorn);
+
+			thorn = CreateBlock(1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 36 * BLOCK_SIZE_X, 350);
+			thorn->m = 33 * BLOCK_SIZE_X; thorn->n = 39 * BLOCK_SIZE_X; thorn->vx = 2.0;
+			blocks.push_back(thorn);
+
+			thorn = CreateBlock(1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 36 * BLOCK_SIZE_X, 400);
+			thorn->m = 32 * BLOCK_SIZE_X; thorn->n = 38 * BLOCK_SIZE_X; thorn->vx = 2.0;
+			blocks.push_back(thorn);
+
+			fire = CreateBlock(1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 32 * BLOCK_SIZE_X, 350);
+			blocks.push_back(fire);
+
 			break;
 		}
 		case STAGE_HELP:
@@ -651,6 +669,15 @@ void TrapDetect(HWND hwnd)
 						theHero = NULL;
 						return;
 					}
+					case BLOCK_MOVETHORN://移动尖刺判定
+					{
+						body = CreateBlock(1000 + BLOCK_STICKBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
+						body->visible = true;
+						blocks.push_back(body);
+						delete theHero;
+						theHero = NULL;
+						return;
+					}
 					case BLOCK_FIRE://火焰方块判定
 					{
 						body = CreateBlock(1000 + BLOCK_BURNEDBODY, bmp_BurnedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
@@ -741,8 +768,10 @@ bool CollitionDetect(HWND hwnd)
 
 					if (theHero->y + HERO_SIZE_Y == block->y
 						&&abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定主角落在方块上
+					{
 						onground = true;
-
+						theHero->basevx = block->vx;
+					}
 					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
 						&& abs(herocenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞，边界条件改变
 					{
@@ -802,7 +831,7 @@ void UpdateHero(HWND hWnd)
 		else if (theHero->vx < 0)theHero->vx += HERO_ACCELERATION;
 
 		//计算位移
-		theHero->x += (int)(theHero->vx);
+		theHero->x += (int)(theHero->vx) + (int)(theHero->basevx);
 		theHero->y += (int)(theHero->vy);
 		
 		
@@ -859,7 +888,8 @@ void BodyTrapDetect(HWND hwnd,Block*body)
 		}
 	}
 
-	if (body->blockID % 100 == BLOCK_MOVABLEBODY)
+	if ((body->blockID % 100 == BLOCK_MOVABLEBODY)||
+		(body->blockID % 100 == BLOCK_STICKBODY))
 	{
 		for (int i = 0; i < blocks.size(); i++)
 		{
@@ -979,14 +1009,18 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 							if (bodycenterX > blockX) //判定方块右面碰撞尸体左面
 							{
 								while (body->x < block->x + BLOCK_SIZE_X)body->x += 1;
-								if (abs(body->vx) > abs(block->vx))
+								if(block->blockID%100==BLOCK_STICKBODY)
+									body->vx = block->vx;
+								else if (abs(body->vx) > abs(block->vx))
 									body->vx = block->vx;
 								else
 									block->vx = body->vx;
 							}
 							else { //判定方块左面碰撞尸体右面
 								while (body->x + HERO_SIZE_X > block->x)body->x -= 1;
-								if (abs(body->vx) > abs(block->vx))
+								if (block->blockID % 100 == BLOCK_STICKBODY)
+									body->vx = block->vx;
+								else if (abs(body->vx) > abs(block->vx))
 									body->vx = block->vx;
 								else
 									block->vx = body->vx;
@@ -1037,7 +1071,6 @@ void UpdateBody(HWND hWnd, Block*body)
 
 
 //刷新环境
-int n = 0;
 void UpdateSurround(HWND hWnd)
 {
 	for (int i = 0; i < blocks.size(); i++)
@@ -1046,20 +1079,20 @@ void UpdateSurround(HWND hWnd)
 		if (block->visible)
 			switch (block->blockID % 100)
 			{
-				case BLOCK_BURNEDBODY:
+				case BLOCK_BURNEDBODY://燃烧尸体
 				{
-					n++;
-					if (n == 5)
+					block->m++;
+					if (block->m == 5)
 					{
 						block->frame++;
-						n = 0;
+						block->m = 0;
 					}
 					if (block->frame > 10)
 						block->visible = false;
 					break;
 				}
 
-				case BLOCK_FIRE:
+				case BLOCK_FIRE://火焰动画
 				{
 					block->frame++;
 					if (block->frame > 31)
@@ -1067,7 +1100,7 @@ void UpdateSurround(HWND hWnd)
 					break;
 				}
 
-				case BLOCK_ICE:
+				case BLOCK_ICE://冰焰动画
 				{
 					block->frame++;
 					if (block->frame > 31)
@@ -1075,16 +1108,63 @@ void UpdateSurround(HWND hWnd)
 					break;
 				}
 
-				case BLOCK_MOVABLEBODY:
+				case BLOCK_MOVABLEBODY://可移动尸体
 				{
 					UpdateBody(hWnd,block);
 					break;
 				}
-				case BLOCK_FREEZE:
+				case BLOCK_FREEZE://冰冻尸体
 				{
 					UpdateBody(hWnd, block);
 					break;
 				}
+				case BLOCK_MOVETHORN://移动尖刺
+				{
+					if ((block->x > block->n && block->vx > 0)
+						|| (block->x < block->m && block->vx < 0))
+						block->vx = -block->vx;
+
+					if ((block->y > block->n && block->vy > 0)
+						|| (block->y < block->m && block->vy < 0))
+						block->vy = -block->vy;
+
+					//计算位移
+					block->x += (int)(block->vx);
+					block->y += (int)(block->vy);
+
+					break;
+				}
+
+				case BLOCK_STICKBODY://插在尖刺上的尸体
+				{
+					int min = 1638400;
+					for (int i = 0; i < blocks.size(); i++)
+					{
+						Block* block2 = blocks[i];
+						int dirX = block2->x - block->x;
+						int dirY = block2->y - block->y;
+						if (block2->visible &&
+							(block2->blockID % 100 == BLOCK_MOVETHORN))
+						{
+							if (dirX*dirX + dirY * dirY < min)
+							{
+								block->vx = block2->vx;
+								block->vy = block2->vy;
+								min = dirX * dirX + dirY * dirY;
+							}
+						}
+					}
+
+					//计算位移
+					block->x += (int)(block->vx);
+					block->y += (int)(block->vy);
+
+					BodyTrapDetect(hWnd, block);//陷阱检测
+
+					break;
+				}
+
+
 				default:
 					break;
 			}

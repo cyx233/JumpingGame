@@ -26,7 +26,7 @@
 #pragma region 宏定义
 
 #define WINDOW_WIDTH			1280	//游戏窗口宽度
-#define WINDOW_HEIGHT			720		//游戏窗口高度
+#define WINDOW_HEIGHT			768		//游戏窗口高度
 #define WINDOW_TITLEBARHEIGHT	32		//标题栏高度
 
 
@@ -41,12 +41,14 @@
 #define BLOCK_THORN			3		//尖刺ID
 #define BLOCK_FIRE			4		//火焰ID
 #define BLOCK_ICE			5		//冰焰ID
+#define BLOCK_MOVETHORN		6		//移动尖刺ID
 
-#define BLOCK_SAVE			6		//存档点ID
-#define BLOCK_MOVABLEBODY	7		//可移动尸体ID
-#define BLOCK_FREEZE		8		//冰冻状态ID
-#define BLOCK_STILLBODY		9		//静止尸体ID
-#define BLOCK_BURNEDBODY	10		//烧毁尸体ID
+#define BLOCK_SAVE			7		//存档点ID
+#define BLOCK_MOVABLEBODY	8		//可移动尸体ID
+#define BLOCK_FREEZE		9		//冰冻状态ID
+#define BLOCK_STILLBODY		10		//静止尸体ID
+#define BLOCK_BURNEDBODY	11		//烧毁尸体ID
+#define BLOCK_STICKBODY		12		//插在移动尖刺上的尸体
 
 
 #define BLOCK_SIZE_X			32		//方块的宽度
@@ -109,6 +111,7 @@ struct Hero
 	int y;			//坐标y
 	double vx;		//速度x
 	double vy;		//速度y
+	double basevx;	//地面速度x
 };
 
 //方块结构体
@@ -124,7 +127,8 @@ struct Block
 	int height;		//高度
 	double vx;		//横坐标速度
 	double vy;		//纵坐标速度
-	int m;
+	int m;			//辅助变量m
+	int n;			//辅助变量n
 };
 
 
