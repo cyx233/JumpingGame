@@ -26,6 +26,7 @@ HBITMAP bmp_MenuButton;		//菜单按钮图像
 HBITMAP bmp_BackButton;		//返回按钮图像
 HBITMAP bmp_ContinueButton; //继续按钮图像
 HBITMAP bmp_RetryButton;	//重生按钮图像
+HBITMAP bmp_SelectButton;	//选关按钮图像
 
 
 HBITMAP bmp_Hero; //主角图像
@@ -35,6 +36,7 @@ HBITMAP bmp_BlockGrass; //草地图像
 HBITMAP bmp_BlockSave;	//存档点图像
 HBITMAP bmp_BlockPedal;	//水晶图像
 HBITMAP bmp_BlockPedalon;//触发水晶图像
+HBITMAP bmp_BlockApple;	//终点图像
 
 HBITMAP bmp_BlockThorn;		//尖刺图像
 HBITMAP bmp_BlockFire;		//火焰图像
@@ -58,7 +60,7 @@ bool keyUpDown = false; //上键
 bool keyDownDown = false; //下键
 bool keyLeftDown = false; //左键
 bool keyRightDown = false; //右键
-bool keyZDown = false; //未开发
+bool keySpaceDown = false; //空格键
 
 
 double const PI = acos(double(-1));
@@ -238,31 +240,38 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	//加载图像资源
 	bmp_Background = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BG));
-	bmp_StartButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_START));
+
 	bmp_Hero = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_HERO));
-	bmp_HelpButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_HELP));
+
 	bmp_BlockDirt= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_DIRT));
 	bmp_BlockGrass = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GRASS));
 	bmp_BlockThorn = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_THORN));
-	bmp_BloodBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BLOODBODY));
+	bmp_BlockIce = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_ICE));
 	bmp_BlockSave = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SAVE));
 	bmp_BlockFire = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_FIRE));
+	bmp_BlockPedal = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PEDAL));
+	bmp_BlockPedalon = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PEDALON));
+	bmp_BlockApple = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_APPLE));
+
+
+	bmp_BloodBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BLOODBODY));
 	bmp_BurnedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BURNEDBODY));
-	bmp_BlockIce = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_ICE));
 	bmp_FreezedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_FREEZED));
+	
+
+	bmp_StartButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_START));
+	bmp_HelpButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_HELP));
 	bmp_MenuButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_MENU));
 	bmp_BackButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BACK));
 	bmp_RetryButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_RETRY));
-	bmp_BlockPedal = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PEDAL));
-	bmp_BlockPedalon = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PEDALON));
-	
+
 
 
 	//添加按钮
 
-	Button* startButton = CreateButton(BUTTON_STARTGAME, bmp_StartButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 300, 300);
+	Button* startButton = CreateButton(BUTTON_STARTGAME, bmp_StartButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 567, 400);
 	buttons.push_back(startButton);
-	Button* helpButton = CreateButton(BUTTON_HELP, bmp_HelpButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 300, 400);
+	Button* helpButton = CreateButton(BUTTON_HELP, bmp_HelpButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 567, 500);
 	buttons.push_back(helpButton);
 
 
@@ -296,6 +305,9 @@ void KeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_RIGHT:
 			keyRightDown = true;
 			break;
+		case VK_SPACE:
+			keySpaceDown = true;
+			break;
 		default:
 			break;
 	}
@@ -304,7 +316,6 @@ void KeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 // 键盘松开事件处理函数
 void KeyUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	// TODO
 	switch (wParam)
 	{
 		case VK_UP:
@@ -318,6 +329,9 @@ void KeyUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			break;
 		case VK_RIGHT:
 			keyRightDown = false;
+			break;
+		case VK_SPACE:
+			keySpaceDown = false;
 			break;
 		default:
 			break;
@@ -357,7 +371,7 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					}
 					case BUTTON_HELP:
 					{
-						InitStage(hWnd, STAGE_HELP);
+						InitStage(hWnd, STAGE_HELP_1);
 						break;
 					}
 					case BUTTON_MENU:
@@ -501,16 +515,16 @@ void InitBlock(HWND hWnd, int stageID)
 		else
 			block->visible = false;
 
-		switch (block->blockID)
+		switch (block->blockID%100)
 		{
 			case BLOCK_FIRE:
-				block->visible = !(block->blockID % 1000) / 100;
+				block->visible = !((block->blockID % 1000) / 100);
 				break;
 			case BLOCK_ICE:
-				block->visible = !(block->blockID % 1000) / 100;
+				block->visible = !((block->blockID % 1000) / 100);
 				break;
 			case BLOCK_MOVETHORN:
-				block->turnon = !(block->blockID % 1000) / 100;
+				block->turnon = !((block->blockID % 1000) / 100);
 		}
 	}
 }
@@ -529,7 +543,7 @@ void InitMap(HWND hWnd, int stageID)
 	vector<Block*>().swap(blocks);
 
 	//添加方块
-	Block* dirt, *thorn, *savepoint, *fire, *ice,*pedal,*onoff;
+	Block* normal, *thorn, *savepoint, *fire, *ice, *pedal, *onoff,*apple;
 	switch (stageID)
 	{
 		case STAGE_STARTMENU:
@@ -538,94 +552,37 @@ void InitMap(HWND hWnd, int stageID)
 		}
 		case STAGE_1:
 		{
-			for (int i = 0; i < 32; i++)
-			{
-				dirt = new Block;
-				dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 + i * BLOCK_SIZE_X, 350);
-				blocks.push_back(dirt);
-			}
-
-			dirt = new Block;
-			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 100, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(dirt);
-
-
-			dirt = new Block;
-			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 300 - 2 * BLOCK_SIZE_Y);
-			blocks.push_back(dirt);
-
-			dirt = new Block;
-			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 200, 300 - 3 * BLOCK_SIZE_Y);
-			blocks.push_back(dirt);
-
-			
-			dirt = new Block;
-			dirt = CreateBlock(1000 + BLOCK_DIRT, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 30 * BLOCK_SIZE_X, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(dirt);
-
-			savepoint = new Block;
-			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 400, 0);
-			blocks.push_back(savepoint);
-
-			CurrentSave = savepoint;//保存初始存档点
-			CurrentSave->frame = 1;
-
-
-			savepoint = new Block;
-			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(savepoint);
-
-			pedal = CreateBlock(1000 + BLOCK_PEDAL, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, 300, 350 - BLOCK_SIZE_Y);
-			pedal->link = 1;
-			blocks.push_back(pedal);
-
-			//fire = CreateBlock(1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 300, 350 - BLOCK_SIZE_Y);
-			//blocks.push_back(fire);
-
-			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 600, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(savepoint);
-
-			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 800, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(savepoint);
-
-
-			ice = CreateBlock(1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 700, 350 - 3*BLOCK_SIZE_Y);
-			blocks.push_back(ice);
-
-
-			thorn = CreateBlock(1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 35*BLOCK_SIZE_X, 350);
-			thorn->m = 32 * BLOCK_SIZE_X; thorn->n = 38 * BLOCK_SIZE_X; thorn->vx = 2.0;
-			blocks.push_back(thorn);
-
-			thorn = CreateBlock(1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 36 * BLOCK_SIZE_X, 350);
-			thorn->m = 33 * BLOCK_SIZE_X; thorn->n = 39 * BLOCK_SIZE_X; thorn->vx = 2.0;
-			blocks.push_back(thorn);
-
-			thorn = CreateBlock(1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 36 * BLOCK_SIZE_X, 400);
-			thorn->m = 32 * BLOCK_SIZE_X; thorn->n = 38 * BLOCK_SIZE_X; thorn->vx = 2.0;
-			blocks.push_back(thorn);
-
-			fire = CreateBlock(1100 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 32 * BLOCK_SIZE_X, 350);
-			fire->link = 1;
-			blocks.push_back(fire);
-
-
 			break;
 		}
-		
-		
-		
-		
-		
-		case STAGE_HELP:
+		case STAGE_HELP_1:
+		{
+			for (int i = 0; i < 40; i++)
+			{
+				if (i <= 15 || i >= 25)
+				{
+					normal = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
+					blocks.push_back(normal);
+				}
+			}
+			
+			thorn = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 16*BLOCK_SIZE_X, 600);
+			thorn->m = 16 * BLOCK_SIZE_X; thorn->n = 24 * BLOCK_SIZE_X; thorn->vx = 2.0;
+			blocks.push_back(thorn);
+
+			savepoint= CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 568);
+			blocks.push_back(savepoint);
+			CurrentSave = savepoint;
+
+			apple = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_APPLE, bmp_BlockApple, BLOCK_SIZE_X, BLOCK_SIZE_Y, 800, 568);
+			blocks.push_back(apple);
 			break;
+		}
 		default:
 			break;
 	}
 
 	//初始化方块
 	InitBlock(hWnd, stageID);
-
 }
 
 
@@ -639,7 +596,8 @@ void InitMap(HWND hWnd, int stageID)
 void InitStage(HWND hWnd, int stageID)
 {
 	// 初始化场景实例
-	if (currentStage != NULL) delete currentStage;
+	if (currentStage != NULL) 
+		delete currentStage;
 	currentStage = new Stage();
 	currentStage->stageID = stageID;
 
@@ -657,14 +615,9 @@ void InitStage(HWND hWnd, int stageID)
 	//初始化背景
 	switch (stageID)
 	{
-		case STAGE_STARTMENU:
-			currentStage->bg = bmp_Background;
-			break;
 		case STAGE_1:
 			currentStage->bg = bmp_Background;
 			break;
-		case STAGE_HELP:
-			currentStage->bg = bmp_Background;
 		default:
 			currentStage->bg = bmp_Background;
 			break;
@@ -681,7 +634,12 @@ void InitStage(HWND hWnd, int stageID)
 
 	// 初始化主角
 	if (theHero != NULL) delete theHero;
-	theHero = CreateHero(bmp_Hero, 400, 0);
+	switch (stageID)
+	{
+		default:
+			theHero = CreateHero(bmp_Hero, 0,300);
+			break;
+	}
 
 
 	//刷新显示
@@ -759,20 +717,20 @@ void TrapDetect(HWND hwnd)
 
 
 // 碰撞检测
-bool CollitionDetect(HWND hwnd)
+bool CollitionDetect(HWND hWnd)
 {
 	bool onground = false; //是否落地
-	int herocenterX = theHero->x + HERO_SIZE_X / 2; 
-	int herocenterY = theHero->y + HERO_SIZE_Y / 2; 
+	int herocenterX = theHero->x + HERO_SIZE_X / 2;
+	int herocenterY = theHero->y + HERO_SIZE_Y / 2;
 	int blockX = 0, blockY = 0;
-	
+
 
 	//方块检测
 	for (int i = 0; i < blocks.size(); i++)
 	{
 		Block* block = blocks[i];
-		blockX = block->x + BLOCK_SIZE_X / 2; 
-		blockY = block->y + BLOCK_SIZE_Y / 2; 
+		blockX = block->x + BLOCK_SIZE_X / 2;
+		blockY = block->y + BLOCK_SIZE_Y / 2;
 		if (block->visible)
 			switch (block->blockID % 100)
 			{
@@ -784,6 +742,27 @@ bool CollitionDetect(HWND hwnd)
 
 				case BLOCK_BURNEDBODY:
 					break;
+
+				case BLOCK_APPLE:
+				{
+					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
+						&& abs(herocenterY - blockY) < block->height / 2 + HERO_SIZE_Y / 2)
+					{
+						switch (currentStage->stageID)
+						{
+							case 7:
+								InitStage(hWnd, STAGE_ENDSTORY);
+								break;
+							case 11:
+								InitStage(hWnd, STAGE_STARTMENU);
+								break;
+							default:
+								InitStage(hWnd, currentStage->stageID + 1);
+								break;
+						}
+						break;
+					}
+				}
 
 				case BLOCK_SAVE://存档点判定
 				{
@@ -797,7 +776,7 @@ bool CollitionDetect(HWND hwnd)
 					}
 					break;
 				}
-				
+
 
 				default://一般方块判定
 				{
@@ -809,7 +788,7 @@ bool CollitionDetect(HWND hwnd)
 						{
 							if (herocenterY < blockY) //判定从方块上方碰撞
 							{
-								while (theHero->y + HERO_SIZE_Y > block->y)theHero->y -= 1; 
+								while (theHero->y + HERO_SIZE_Y > block->y)theHero->y -= 1;
 								theHero->vy = 0;
 							}
 							else //判定从方块下方碰撞
@@ -820,12 +799,15 @@ bool CollitionDetect(HWND hwnd)
 						}
 					}
 
+
 					if (theHero->y + HERO_SIZE_Y == block->y
 						&&abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定主角落在方块上
 					{
 						onground = true;
 						theHero->basevx = block->vx;
 					}
+
+
 					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
 						&& abs(herocenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞，边界条件改变
 					{
@@ -844,12 +826,12 @@ bool CollitionDetect(HWND hwnd)
 							onground = false; //判定撞墙，不算落地
 						}
 					}
+					break;
 				}
 			}
 	}
 	return onground;
 }
-
 
 //主角状态刷新
 
@@ -860,7 +842,7 @@ void UpdateHero(HWND hWnd)
 		TrapDetect(hWnd);
 
 	 //主角重生
-	if ((theHero == NULL) && keyUpDown)
+	if ((theHero == NULL) && keySpaceDown)
 		theHero = CreateHero(bmp_Hero, CurrentSave->x, CurrentSave->y);
 
 
@@ -1130,7 +1112,7 @@ void UpdateBody(HWND hWnd, Block*body)
 		//超出地图边界
 		if (body->y > WINDOW_HEIGHT)
 		{
-			body->blockID = BLOCK_DIRT;
+			body->blockID = BLOCK_NORMAL;
 			body->visible = false;
 			body->vy = 0;
 		}
@@ -1357,18 +1339,20 @@ void UpdateSurround(HWND hWnd)
 
 				case BLOCK_MOVETHORN://移动尖刺
 				{
-					if ((block->x >= block->n && block->vx >= 0)
-						|| (block->x <= block->m && block->vx <= 0))
-						block->vx = -block->vx;
+					if (block->turnon = true)
+					{
+						if ((block->x >= block->n && block->vx >= 0)
+							|| (block->x <= block->m && block->vx <= 0))
+							block->vx = -block->vx;
 
-					if ((block->y >= block->n && block->vy >= 0)
-						|| (block->y <= block->m && block->vy <= 0))
-						block->vy = -block->vy;
+						if ((block->y >= block->n && block->vy >= 0)
+							|| (block->y <= block->m && block->vy <= 0))
+							block->vy = -block->vy;
 
-					//计算位移
-					block->x += (int)(block->vx);
-					block->y += (int)(block->vy);
-
+						//计算位移
+						block->x += (int)(block->vx);
+						block->y += (int)(block->vy);
+					}
 					break;
 				}
 
@@ -1473,10 +1457,10 @@ void Paint(HWND hWnd)
 	if (theHero != NULL)
 		switch (currentStage->stageID) //TODO：添加多个游戏场景
 		{
-			// 绘制主角到缓存
-			case STAGE_1:
-			{
-
+			case STAGE_STARTMENU:
+				break;
+			
+			default:				
 				SelectObject(hdc_loadBmp, theHero->img);
 				TransparentBlt(
 					hdc_memBuffer, theHero->x, theHero->y,
@@ -1484,8 +1468,6 @@ void Paint(HWND hWnd)
 					hdc_loadBmp, 0, 0, HERO_SIZE_X, HERO_SIZE_Y,
 					RGB(255, 255, 255)
 				);
-			}
-			default:
 				break;
 		}
 
