@@ -87,5 +87,11 @@
     <Image Include="res\buttonretry.bmp">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\pedal.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\pedalon.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

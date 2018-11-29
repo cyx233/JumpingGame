@@ -42,14 +42,15 @@
 #define BLOCK_FIRE			4		//火焰ID
 #define BLOCK_ICE			5		//冰焰ID
 #define BLOCK_MOVETHORN		6		//移动尖刺ID
-#define BLOCK_PEDAL		7		//踏板ID
+#define BLOCK_PEDAL			7		//踏板ID
+#define BLOCK_ONOFF			8		//开关ID
 
-#define BLOCK_SAVE			7		//存档点ID
-#define BLOCK_MOVABLEBODY	8		//可移动尸体ID
-#define BLOCK_FREEZE		9		//冰冻状态ID
-#define BLOCK_STILLBODY		10		//静止尸体ID
-#define BLOCK_BURNEDBODY	11		//烧毁尸体ID
-#define BLOCK_STICKBODY		12		//插在移动尖刺上的尸体
+#define BLOCK_SAVE			9		//存档点ID
+#define BLOCK_MOVABLEBODY	10		//可移动尸体ID
+#define BLOCK_FREEZE		11		//冰冻状态ID
+#define BLOCK_STILLBODY		12		//静止尸体ID
+#define BLOCK_BURNEDBODY	13		//烧毁尸体ID
+#define BLOCK_STICKBODY		14		//插在移动尖刺上的尸体
 
 
 #define BLOCK_SIZE_X			32		//方块的宽度
@@ -125,6 +126,7 @@ struct Block
 {
 	int blockID;	//方块ID  (stageID)*1000+按钮种类序号
 	bool visible;	//方块是否可见
+	bool turnon;	//方块是否触发
 	int	frame;		//方块帧数
 	HBITMAP img;	//图片
 	int x;			//坐标x
@@ -135,6 +137,7 @@ struct Block
 	double vy;		//纵坐标速度
 	int m;			//辅助变量m
 	int n;			//辅助变量n
+	int link;		//关联变量
 };
 
 
@@ -224,7 +227,9 @@ void BodyTrapDetect(HWND hWnd,Block*body);	//尸体陷阱检测
 
 bool BodyCollitionDetect(HWND hWnd, Block*body);//尸体碰撞检测
 
-void Trigger(HMND hWnd, int m);	//踏板触发检测
+void TriggerP(HWND hWnd, Block*pedal);	//踏板触发检测
+
+void TriggerOnOff(HWND hWnd, Block*onoff);
 
 #pragma endregion
 

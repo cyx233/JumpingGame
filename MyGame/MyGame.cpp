@@ -21,9 +21,9 @@ WCHAR szWindowClass[MAX_LOADSTRING]; // 主窗口类名
 HBITMAP bmp_Background; //背景图像
 
 HBITMAP bmp_StartButton;	//开始按钮图像
-HBITMAP bmp_HelpButton;	//帮助按钮图像
-HBITMAP bmp_MenuButton;	//菜单按钮图像
-HBITMAP bmp_BackButton;	//返回按钮图像
+HBITMAP bmp_HelpButton;		//帮助按钮图像
+HBITMAP bmp_MenuButton;		//菜单按钮图像
+HBITMAP bmp_BackButton;		//返回按钮图像
 HBITMAP bmp_ContinueButton; //继续按钮图像
 HBITMAP bmp_RetryButton;	//重生按钮图像
 
@@ -33,6 +33,8 @@ HBITMAP bmp_Hero; //主角图像
 HBITMAP bmp_BlockDirt;  //泥土图像
 HBITMAP bmp_BlockGrass; //草地图像
 HBITMAP bmp_BlockSave;	//存档点图像
+HBITMAP bmp_BlockPedal;	//水晶图像
+HBITMAP bmp_BlockPedalon;//触发水晶图像
 
 HBITMAP bmp_BlockThorn;		//尖刺图像
 HBITMAP bmp_BlockFire;		//火焰图像
@@ -252,6 +254,7 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_BackButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BACK));
 	bmp_RetryButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_RETRY));
 	bmp_BlockPedal = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PEDAL));
+	bmp_BlockPedalon = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PEDALON));
 	
 
 
@@ -453,6 +456,8 @@ Block* CreateBlock(int blockID, HBITMAP img, int width, int height, int x, int y
 	block->vx = 0;
 	block->m = 0;
 	block->n = 0;
+	block->turnon = false;
+	block->link = 0;
 	return block;
 }
 
@@ -488,13 +493,24 @@ void InitBlock(HWND hWnd, int stageID)
 	for (int i = 0; i < blocks.size(); i++)
 	{
 		Block* block = blocks[i];
-		if (block->blockID / 1000  == stageID)
+
+		if (block->blockID / 1000 == stageID)
 		{
 			block->visible = true;
 		}
 		else
-		{
 			block->visible = false;
+
+		switch (block->blockID)
+		{
+			case BLOCK_FIRE:
+				block->visible = !(block->blockID % 1000) / 100;
+				break;
+			case BLOCK_ICE:
+				block->visible = !(block->blockID % 1000) / 100;
+				break;
+			case BLOCK_MOVETHORN:
+				block->turnon = !(block->blockID % 1000) / 100;
 		}
 	}
 }
@@ -513,7 +529,7 @@ void InitMap(HWND hWnd, int stageID)
 	vector<Block*>().swap(blocks);
 
 	//添加方块
-	Block* dirt, *thorn, *savepoint, *fire, *ice;
+	Block* dirt, *thorn, *savepoint, *fire, *ice,*pedal,*onoff;
 	switch (stageID)
 	{
 		case STAGE_STARTMENU:
@@ -559,14 +575,19 @@ void InitMap(HWND hWnd, int stageID)
 			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
 
-			fire = CreateBlock(1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 300, 350 - BLOCK_SIZE_Y);
-			blocks.push_back(fire);
+			pedal = CreateBlock(1000 + BLOCK_PEDAL, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, 300, 350 - BLOCK_SIZE_Y);
+			pedal->link = 1;
+			blocks.push_back(pedal);
+
+			//fire = CreateBlock(1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 300, 350 - BLOCK_SIZE_Y);
+			//blocks.push_back(fire);
 
 			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 600, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
 
 			savepoint = CreateBlock(1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 800, 350 - BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
+
 
 			ice = CreateBlock(1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 700, 350 - 3*BLOCK_SIZE_Y);
 			blocks.push_back(ice);
@@ -584,8 +605,10 @@ void InitMap(HWND hWnd, int stageID)
 			thorn->m = 32 * BLOCK_SIZE_X; thorn->n = 38 * BLOCK_SIZE_X; thorn->vx = 2.0;
 			blocks.push_back(thorn);
 
-			fire = CreateBlock(1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 32 * BLOCK_SIZE_X, 350);
+			fire = CreateBlock(1100 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 32 * BLOCK_SIZE_X, 350);
+			fire->link = 1;
 			blocks.push_back(fire);
+
 
 			break;
 		}
@@ -1040,21 +1063,35 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 							if (bodycenterX > blockX) //判定方块右面碰撞尸体左面
 							{
 								while (body->x < block->x + BLOCK_SIZE_X)body->x += 1;
-								if(block->blockID%100==BLOCK_STICKBODY)
-									body->vx = block->vx;
-								else if (abs(body->vx) > abs(block->vx))
-									body->vx = block->vx;
+								if ((block->blockID % 100 == BLOCK_FREEZE)
+									|| (block->blockID % 100 == BLOCK_MOVABLEBODY)
+									|| (block->blockID % 100 == BLOCK_STICKBODY))
+								{
+									if (block->blockID % 100 == BLOCK_STICKBODY)
+										body->vx = block->vx;
+									else if (abs(body->vx) > abs(block->vx))
+										body->vx = block->vx;
+									else
+										block->vx = body->vx;
+								}
 								else
-									block->vx = body->vx;
+									body->vx = block->vx;
 							}
 							else { //判定方块左面碰撞尸体右面
 								while (body->x + HERO_SIZE_X > block->x)body->x -= 1;
-								if (block->blockID % 100 == BLOCK_STICKBODY)
-									body->vx = block->vx;
-								else if (abs(body->vx) > abs(block->vx))
-									body->vx = block->vx;
+								if ((block->blockID % 100 == BLOCK_FREEZE)
+									|| (block->blockID % 100 == BLOCK_MOVABLEBODY)
+									|| (block->blockID % 100 == BLOCK_STICKBODY))
+								{
+									if (block->blockID % 100 == BLOCK_STICKBODY)
+										body->vx = block->vx;
+									else if (abs(body->vx) > abs(block->vx))
+										body->vx = block->vx;
+									else
+										block->vx = body->vx;
+								}
 								else
-									block->vx = body->vx;
+									body->vx = block->vx;
 							}
 						}
 					}
@@ -1076,7 +1113,7 @@ void UpdateBody(HWND hWnd, Block*body)
 		|| (body->blockID % 100 == BLOCK_FREEZE))
 	{
 
-		bool onground = BodyCollitionDetect(hWnd,body);
+		bool onground = BodyCollitionDetect(hWnd,body);//碰撞检测
 
 		//移动判定
 		//y方向速度
@@ -1102,19 +1139,160 @@ void UpdateBody(HWND hWnd, Block*body)
 
 
 //踏板触发
-void TriggerP(HWND hWnd, int m)
+void TriggerP(HWND hWnd, Block*pedal)
 {
-	if(theHero!=NULL)
+	pedal->img = bmp_BlockPedal;
+	int pedalcenterX = pedal->x + BLOCK_SIZE_X / 2;
+	int pedalcenterY = pedal->y + BLOCK_SIZE_Y / 2;
+
+	if (theHero != NULL)
 	{
 		int herocenterX = theHero->x + HERO_SIZE_X / 2;
 		int herocenterY = theHero->y + HERO_SIZE_Y / 2;
-		
+		if (abs(herocenterX - pedalcenterX) <= pedal->width / 2 + HERO_SIZE_X / 2
+			&& abs(herocenterY - pedalcenterY) <= pedal->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
+			pedal->img = bmp_BlockPedalon;
 	}
-	
 
-
-
+	for (int i = 0; i < blocks.size(); i++)
+	{
+		if ((blocks[i]->x == pedal->x)
+			&& (blocks[i]->y == pedal->y))
+			if (i == blocks.size())
+				break;
+			else
+				continue;
+		if ((blocks[i]->blockID % 100 == BLOCK_MOVABLEBODY)
+			|| (blocks[i]->blockID % 100 == BLOCK_FREEZE))
+		{
+			int blockX = blocks[i]->x + BLOCK_SIZE_X / 2;
+			int blockY = blocks[i]->y + BLOCK_SIZE_Y / 2;
+			if (abs(blockX - pedalcenterX) <= pedal->width / 2 + BLOCK_SIZE_X / 2
+				&& abs(blockY - pedalcenterY) <= pedal->height / 2 + BLOCK_SIZE_Y / 2) //判定碰撞
+				pedal->img = bmp_BlockPedalon;
+		}
+	}
+	if (pedal->img == bmp_BlockPedalon)
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			Block* block = blocks[i];
+			if ((block->x == pedal->x)
+				&& (block->y == pedal->y))
+				if (i == blocks.size())
+					break;
+				else
+					continue;
+			if (block->link == pedal->link)
+			{
+				switch (block->blockID % 100)
+				{
+					case BLOCK_MOVETHORN:
+					{
+						block->turnon = (block->blockID % 1000) / 100;
+						break;
+					}
+					case BLOCK_FIRE:
+					{
+						block->visible = (block->blockID % 1000) / 100;
+						break;
+					}
+					case BLOCK_ICE:
+					{
+						block->visible = (block->blockID % 1000) / 100;
+						break;
+					}
+				}
+			}
+		}
+	else
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			Block* block = blocks[i];
+			if ((block->x == pedal->x)
+				&& (block->y == pedal->y))
+				if (i == blocks.size())
+					break;
+				else
+					continue;
+			if (block->link == pedal->link)
+			{
+				switch (block->blockID % 100)
+				{
+					case BLOCK_MOVETHORN:
+					{
+						block->turnon = !(block->blockID % 1000) / 100;
+						break;
+					}
+					case BLOCK_FIRE:
+					{
+						block->visible = !(block->blockID % 1000) / 100;
+						break;
+					}
+					case BLOCK_ICE:
+					{
+						block->visible = !(block->blockID % 1000) / 100;
+						break;
+					}
+				}
+			}
+		}
+	return;
 }
+
+//开关触发判定
+void TriggerOnOff(HWND hWnd, Block*onoff)
+{
+	int onoffcenterX = onoff->x + BLOCK_SIZE_X / 2;
+	int onoffcenterY = onoff->y + BLOCK_SIZE_Y / 2;
+
+	if (theHero != NULL)
+	{
+		int herocenterX = theHero->x + HERO_SIZE_X / 2;
+		int herocenterY = theHero->y + HERO_SIZE_Y / 2;
+		if (abs(herocenterX - onoffcenterX) < onoff->width / 2 + HERO_SIZE_X / 2
+			&& abs(herocenterY - onoffcenterY) < onoff->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
+		{
+			if (onoff->img == bmp_BlockPedalon)
+				onoff->img = bmp_BlockPedal;
+			else
+				onoff->img = bmp_BlockPedalon;
+		}
+	}
+	if (onoff->img == bmp_BlockPedalon)
+	{
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			Block* block = blocks[i];
+			if ((block->x == onoff->x)
+				&& (block->y == onoff->y))
+				if (i == blocks.size())
+					break;
+				else
+					continue;
+			if (block->link == onoff->link)
+				switch (block->blockID % 100)
+				{
+					case BLOCK_MOVETHORN:
+					{
+						block->turnon = (block->blockID % 1000) / 100;
+						break;
+					}
+					case BLOCK_FIRE:
+					{
+						block->visible = (block->blockID % 1000) / 100;
+						break;
+					}
+					case BLOCK_ICE:
+					{
+						block->visible = (block->blockID % 1000) / 100;
+						break;
+					}
+				}
+		}
+	}
+}
+
+
 
 //刷新环境
 void UpdateSurround(HWND hWnd)
@@ -1167,17 +1345,24 @@ void UpdateSurround(HWND hWnd)
 				
 				case BLOCK_PEDAL://踏板
 				{
-					Trigger(hWnd,block->m);
+					TriggerP(hWnd,block);
 					break;
 				}
+
+				case BLOCK_ONOFF://开关
+				{
+					TriggerOnOff(hWnd, block);
+					break;
+				}
+
 				case BLOCK_MOVETHORN://移动尖刺
 				{
-					if ((block->x > block->n && block->vx > 0)
-						|| (block->x < block->m && block->vx < 0))
+					if ((block->x >= block->n && block->vx >= 0)
+						|| (block->x <= block->m && block->vx <= 0))
 						block->vx = -block->vx;
 
-					if ((block->y > block->n && block->vy > 0)
-						|| (block->y < block->m && block->vy < 0))
+					if ((block->y >= block->n && block->vy >= 0)
+						|| (block->y <= block->m && block->vy <= 0))
 						block->vy = -block->vy;
 
 					//计算位移
