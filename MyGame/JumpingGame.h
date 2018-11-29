@@ -42,6 +42,7 @@
 #define BLOCK_FIRE			4		//火焰ID
 #define BLOCK_ICE			5		//冰焰ID
 #define BLOCK_MOVETHORN		6		//移动尖刺ID
+#define BLOCK_PEDAL		7		//踏板ID
 
 #define BLOCK_SAVE			7		//存档点ID
 #define BLOCK_MOVABLEBODY	8		//可移动尸体ID
@@ -68,10 +69,10 @@
 #define BUTTON_HELP					0002	//游戏帮助按钮ID
 #define BUTTON_STARTGAME_WIDTH		147		//开始游戏按钮宽度
 #define BUTTON_STARTGAME_HEIGHT		60		//开始游戏按钮高度
-#define BUTTON_MENU					0003
-#define BUTTON_BACK					0004
-#define BUTTON_CONTINUE				0005
-#define BUTTON_RETRY				0006
+#define BUTTON_MENU					0003	//菜单按钮ID
+#define BUTTON_BACK					0004	//返回按钮ID
+#define BUTTON_CONTINUE				0005	//继续按钮ID
+#define BUTTON_RETRY				0006		//从来按钮ID
 
 
 
@@ -216,9 +217,14 @@ void TrapDetect(HWND hWnd);
 #pragma region 环境状态函数
 
 void UpdateBody(HWND hWnd, Block*block);	//刷新尸体状态函数
+
 void UpdateSurround(HWND hWnd);				//刷新环境状态函数
+
 void BodyTrapDetect(HWND hWnd,Block*body);	//尸体陷阱检测
-bool BodyCollitionDetect(HWND hwnd, Block*body);//尸体碰撞检测
+
+bool BodyCollitionDetect(HWND hWnd, Block*body);//尸体碰撞检测
+
+void Trigger(HMND hWnd, int m);	//踏板触发检测
 
 #pragma endregion
 

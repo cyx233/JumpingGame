@@ -248,10 +248,10 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_BurnedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BURNEDBODY));
 	bmp_BlockIce = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_ICE));
 	bmp_FreezedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_FREEZED));
-	bmp_MenuButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_MENU));
-	bmp_BackButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BACK));
-	bmp_RetryButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_RETRY));
-	
+	bmp_MenuButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_MENU));
+	bmp_BackButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BACK));
+	bmp_RetryButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_RETRY));
+	bmp_BlockPedal = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PEDAL));
 	
 
 
@@ -1101,6 +1101,21 @@ void UpdateBody(HWND hWnd, Block*body)
 }
 
 
+//踏板触发
+void TriggerP(HWND hWnd, int m)
+{
+	if(theHero!=NULL)
+	{
+		int herocenterX = theHero->x + HERO_SIZE_X / 2;
+		int herocenterY = theHero->y + HERO_SIZE_Y / 2;
+		
+	}
+	
+
+
+
+}
+
 //刷新环境
 void UpdateSurround(HWND hWnd)
 {
@@ -1147,6 +1162,12 @@ void UpdateSurround(HWND hWnd)
 				case BLOCK_FREEZE://冰冻尸体
 				{
 					UpdateBody(hWnd, block);
+					break;
+				}
+				
+				case BLOCK_PEDAL://踏板
+				{
+					Trigger(hWnd,block->m);
 					break;
 				}
 				case BLOCK_MOVETHORN://移动尖刺
