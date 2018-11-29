@@ -68,6 +68,11 @@
 #define BUTTON_HELP					0002	//游戏帮助按钮ID
 #define BUTTON_STARTGAME_WIDTH		147		//开始游戏按钮宽度
 #define BUTTON_STARTGAME_HEIGHT		60		//开始游戏按钮高度
+#define BUTTON_MENU					0003
+#define BUTTON_BACK					0004
+#define BUTTON_CONTINUE				0005
+#define BUTTON_RETRY				0006
+
 
 
 #define TIMER_GAMETIMER				1	//游戏的默认计时器ID

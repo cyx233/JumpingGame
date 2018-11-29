@@ -36,9 +36,6 @@
     <Image Include="res\icon.ico">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bed_head_side.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
     <Image Include="res\bg.bmp">
       <Filter>资源文件</Filter>
     </Image>
@@ -63,9 +60,6 @@
     <Image Include="res\burned.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\apple.bmp">
-      <Filter>资源文件</Filter>
-    </Image>
     <Image Include="res\fire.bmp">
       <Filter>资源文件</Filter>
     </Image>
@@ -73,6 +67,24 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\ice.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\help.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\save.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\buttonback.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\buttonmenu.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\buttonpause.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\buttonretry.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

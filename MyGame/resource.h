@@ -18,13 +18,18 @@
 #define IDB_BITMAP_BURNEDBODY           184
 #define IDB_BITMAP_SAVE                 186
 #define IDB_BITMAP_ICE                  187
+#define IDB_BITMAP_BACK                 188
+#define IDB_BITMAP_MENU                 189
+#define IDB_BITMAP_PAUSE                190
+#define IDB_BITMAP4                     191
+#define IDB_BITMAP_RETRY                191
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        188
+#define _APS_NEXT_RESOURCE_VALUE        192
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110

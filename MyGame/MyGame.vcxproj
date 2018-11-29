@@ -157,8 +157,12 @@
     <ResourceCompile Include="JumpingGame.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\apple.bmp" />
-    <Image Include="res\bed_head_side.bmp" />
+    <Image Include="res\buttonback.bmp" />
+    <Image Include="res\buttonmenu.bmp" />
+    <Image Include="res\buttonpause.bmp" />
+    <Image Include="res\buttonretry.bmp" />
+    <Image Include="res\save.bmp" />
+    <Image Include="res\help.bmp" />
     <Image Include="res\bg.bmp" />
     <Image Include="res\bloodbody.bmp" />
     <Image Include="res\burned.bmp" />
