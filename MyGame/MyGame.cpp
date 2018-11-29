@@ -20,8 +20,13 @@ WCHAR szWindowClass[MAX_LOADSTRING]; // 主窗口类名
 
 HBITMAP bmp_Background; //背景图像
 
-HBITMAP bmp_StartButton; //开始按钮图像
-HBITMAP bmp_HelpButton; //帮助按钮图像
+HBITMAP bmp_StartButton;	//开始按钮图像
+HBITMAP bmp_HelpButton;	//帮助按钮图像
+HBITMAP bmp_MenuButton;	//菜单按钮图像
+HBITMAP bmp_BackButton;	//返回按钮图像
+HBITMAP bmp_ContinueButton; //继续按钮图像
+HBITMAP bmp_RetryButton;	//重生按钮图像
+
 
 HBITMAP bmp_Hero; //主角图像
 
@@ -243,6 +248,12 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_BurnedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BURNEDBODY));
 	bmp_BlockIce = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_ICE));
 	bmp_FreezedBody = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_FREEZED));
+	/* bmp_MenuButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_MENU));
+	bmp_BackButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BACK));
+	bmp_RetryButton= LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_Retry));
+	*/
+	
+	
 
 
 	//添加按钮
@@ -347,7 +358,23 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						InitStage(hWnd, STAGE_HELP);
 						break;
 					}
-					default:
+					case BUTTON_MENU
+					{
+						break;
+					}
+					case BUTTON_BACK:
+					{
+						break;
+					}
+					case BUTTON_CONTINUE:
+					{
+						break;
+					}
+					case BUTTON_RETRY:
+					{
+						break;
+					}
+																	default:
 						break;
 				}
 			}
@@ -563,6 +590,11 @@ void InitMap(HWND hWnd, int stageID)
 
 			break;
 		}
+		
+		
+		
+		
+		
 		case STAGE_HELP:
 			break;
 		default:
