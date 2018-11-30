@@ -577,6 +577,114 @@ void InitMap(HWND hWnd, int stageID)
 			blocks.push_back(apple);
 			break;
 		}
+		case STAGE_HELP_2:
+		{
+			for (int i = 0; i < 40; i++)
+			{
+				if (i <= 15 || i >= 25)
+				{
+					normal = CreateBlock(STAGE_HELP_2 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
+					blocks.push_back(normal);
+				}
+				else
+				{
+					thorn = CreateBlock(STAGE_HELP_2 * 1000 + BLOCK_THORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 16*BLOCK_SIZE_X, 600);
+				blocks.push_back(thorn);
+				}
+			}
+			
+			for(int i=0;i<3;i++)
+			{
+				fire = CreateBlock(STAGE_HELP_2 * 1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20*BLOCK_SIZE_X, 568-i*BLOCK_SIZE_Y);
+				blocks.push_back(fire);
+			}
+			
+			
+			savepoint= CreateBlock(STAGE_HELP_2 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 568);
+			blocks.push_back(savepoint);
+			CurrentSave = savepoint;
+
+			apple = CreateBlock(STAGE_HELP_2 * 1000 + BLOCK_APPLE, bmp_BlockApple, BLOCK_SIZE_X, BLOCK_SIZE_Y, 800, 568);
+			blocks.push_back(apple);
+			break;
+		}
+		
+		case STAGE_HELP_3:
+		{
+			for (int i = 0; i < 40; i++)
+			{
+				if(i!=5)
+				{
+					normal = CreateBlock(STAGE_HELP_3 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
+					blocks.push_back(normal);
+				}
+			}
+			
+			for(int i = 0; i<10; i++)
+			{
+				fire = CreateBlock(STAGE_HELP_3 * 1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20*BLOCK_SIZE_X, 568-i*BLOCK_SIZE_Y);
+				fire->link = 1;
+				blocks.push_back(fire);
+			}
+			
+			pedal = CreateBlock(STAGE_HELP_3 * 1000 + BLOCK_PEDAL, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, 39*BLOCK_SIZE_X, 568);
+			pedal->link=1;
+			blocks.push_back(pedal);
+			
+			
+			ice = CreateBlock(STAGE_HELP_3 * 1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 10*BLOCK_SIZE_X, 600-3*BLOCK_SIZE_Y);
+			
+			
+			savepoint= CreateBlock(STAGE_HELP_3 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 568);
+			blocks.push_back(savepoint);
+			CurrentSave = savepoint;
+
+			apple = CreateBlock(STAGE_HELP_3 * 1000 + BLOCK_APPLE, bmp_BlockApple, BLOCK_SIZE_X, BLOCK_SIZE_Y, 800, 568);
+			blocks.push_back(apple);
+			break;	
+		}
+		
+		case STAGE_HELP_4:
+		{
+			for (int i = 0; i < 40; i++)
+			{
+				normal = CreateBlock(STAGE_HELP_4 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
+				blocks.push_back(normal);
+				if(i>=6&&i<=8)
+				{
+					normal = CreateBlock(STAGE_HELP_4 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600-3*BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}
+				
+			}
+			
+			for(int i=0,i<10;i++)
+			{
+				fire = CreateBlock(STAGE_HELP_4 * 1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 10*BLOCK_SIZE_X, 568-i*BLOCK_SIZE_Y);
+				fire->link = 1;
+				blocks.push_back(fire);
+				
+				fire = CreateBlock(STAGE_HELP_4 * 1000 + BLOCK_FIRE +100, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20*BLOCK_SIZE_X, 568-i*BLOCK_SIZE_Y);
+				fire->link = 1;
+				blocks.push_back(fire);
+			}
+				
+			pedal = CreateBlock(STAGE_HELP_4 * 1000 + BLOCK_PEDAL, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, 5*BLOCK_SIZE_X,600);
+			pedal->link=1;
+			blocks.push_back(pedal);
+			
+			normal = CreateBlock(STAGE_HELP_4 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 6*BLOCK_SIZE_X, 600-3*BLOCK_SIZE_Y);
+			blocks.push_back(normal);
+			
+			normal = CreateBlock(STAGE_HELP_4 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, 8*BLOCK_SIZE_X, 600-3*BLOCK_SIZE_Y);
+			blocks.push_back(normal);
+			
+			onoff= CreateBlock(STAGE_HELP_4 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, 8*BLOCK_SIZE_X, 600-3*BLOCK_SIZE_Y);
+			onoff->link = 1;
+			
+			
+		
+		}
 		default:
 			break;
 	}
