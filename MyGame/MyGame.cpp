@@ -55,6 +55,7 @@ Hero* theHero = NULL; //主角状态
 vector<Button*> buttons; //按钮
 Name*theName;			//姓名栏
 vector<Block*>blocks; //方块         
+vector<int>namelist;
 
 
 int mouseX = 0; //鼠标横坐标
@@ -65,7 +66,6 @@ bool keyDownDown = false; //下键
 bool keyLeftDown = false; //左键
 bool keyRightDown = false; //右键
 bool keySpaceDown = false; //空格键
-int namelist[1000] = { -1 };
 
 double const PI = acos(double(-1));
 #pragma endregion
@@ -270,7 +270,8 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_MenuButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_MENU));
 	bmp_BackButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BACK));
 	bmp_RetryButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_RETRY));
-
+	bmp_PauseButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PAUSE));
+	bmp_ContinueButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_CONTINUE));
 
 	//添加按钮
 
@@ -278,6 +279,16 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	buttons.push_back(startButton);
 	Button* helpButton = CreateButton(BUTTON_HELP, bmp_HelpButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 567, 500);
 	buttons.push_back(helpButton);
+	for (int i = 3; i <= 11; i++)
+	{
+		Button* pauseButton = CreateButton(i * 1000 + BUTTON_PAUSE, bmp_PauseButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1200, 0);
+		buttons.push_back(pauseButton);
+	}
+	Button* menuButton = CreateButton(100 * 1000 + BUTTON_MENU, bmp_MenuButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1200, BLOCK_SIZE_Y + 5);
+	buttons.push_back(menuButton);
+
+	Button* retryButton = CreateButton(100 * 1000 + BUTTON_RETRY, bmp_RetryButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1200, BLOCK_SIZE_Y * 2 + 10);
+	buttons.push_back(retryButton);
 
 	//初始化姓名栏
 	theName = CreateName(bmp_Name, 567, 700);
@@ -372,7 +383,7 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				&& button->y <= mouseY
 				&& button->y + button->height >= mouseY)
 			{
-				switch (button->buttonID) {
+				switch (button->buttonID % 100) {
 					case BUTTON_STARTGAME:
 					{
 						InitStage(hWnd, STAGE_1);
@@ -390,14 +401,41 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					}
 					case BUTTON_BACK:
 					{
+						if (currentStage->stageID / 1000 >= 3
+							&& currentStage->stageID / 1000 <= 11)
+							InitStage(hWnd, STAGE_SELECT);
 						break;
 					}
 					case BUTTON_CONTINUE:
 					{
+						currentStage->timerOn = true;
+						button->buttonID = button->buttonID + BUTTON_PAUSE - BUTTON_CONTINUE;
+						button->img = bmp_PauseButton;
+						for (int j = 0; j < buttons.size(); j++)
+						{
+							if ((buttons[j]->buttonID % 100 == BUTTON_MENU)
+								|| (buttons[j]->buttonID % 100 == BUTTON_RETRY))
+								buttons[j]->visible = false;
+						}
 						break;
 					}
 					case BUTTON_RETRY:
 					{
+						InitStage(hWnd, currentStage->stageID);
+						break;
+					}
+					case BUTTON_PAUSE:
+					{
+						button->buttonID = button->buttonID - BUTTON_PAUSE + BUTTON_CONTINUE;
+						button->img = bmp_ContinueButton;
+						for (int j = 0; j < buttons.size(); j++)
+						{
+							if ((buttons[j]->buttonID % 100 == BUTTON_MENU)
+								|| (buttons[j]->buttonID % 100 == BUTTON_RETRY))
+								buttons[j]->visible = true;
+						}
+						InvalidateRect(hWnd, NULL, FALSE);
+						currentStage->timerOn = false;
 						break;
 					}
 					default:
@@ -520,6 +558,11 @@ void InitButton(HWND hWnd, int stageID)
 		{
 			button->visible = false;
 		}
+		if (button->buttonID % 100 == BUTTON_CONTINUE)
+		{
+			button->buttonID = button->buttonID - BUTTON_CONTINUE + BUTTON_PAUSE;
+			button->img = bmp_PauseButton;
+		}
 	}
 }
 
@@ -585,6 +628,8 @@ void InitMap(HWND hWnd, int stageID)
 		}
 		case STAGE_1:
 		{
+
+
 			break;
 		}
 		case STAGE_HELP_1:
@@ -994,10 +1039,10 @@ bool CollitionDetect(HWND hWnd)
 //姓名栏刷新
 void UpdateName()
 {
-
 	srand(time(NULL));
 	int r = rand() % 889;
 	theName->frame = r;
+	namelist.push_back(r);
 }
 
 //主角状态刷新
@@ -1661,6 +1706,7 @@ void Paint(HWND hWnd)
 		{
 			case STAGE_STARTSTORY:
 				break;
+			
 			default:
 				SelectObject(hdc_loadBmp, theName->img);
 				TransparentBlt(
