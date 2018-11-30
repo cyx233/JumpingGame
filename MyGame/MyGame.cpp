@@ -65,7 +65,7 @@ bool keyDownDown = false; //下键
 bool keyLeftDown = false; //左键
 bool keyRightDown = false; //右键
 bool keySpaceDown = false; //空格键
-
+int namelist[1000] = { -1 };
 
 double const PI = acos(double(-1));
 #pragma endregion
@@ -994,10 +994,10 @@ bool CollitionDetect(HWND hWnd)
 //姓名栏刷新
 void UpdateName()
 {
-	if (theName->frame < 888)
-		theName->frame++;
-	else
-		theName->frame = 0;
+
+	srand(time(NULL));
+	int r = rand() % 889;
+	theName->frame = r;
 }
 
 //主角状态刷新
@@ -1669,6 +1669,7 @@ void Paint(HWND hWnd)
 					hdc_loadBmp, 0, theName->frame*NAME_HEIGHT, NAME_WIDTH, NAME_HEIGHT,
 					RGB(255, 255, 255));
 		}
+
 
 	// 最后将所有的信息绘制到屏幕上
 	BitBlt(hdc_window, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hdc_memBuffer, 0, 0, SRCCOPY);
