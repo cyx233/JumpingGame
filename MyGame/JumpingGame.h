@@ -26,7 +26,7 @@
 #pragma region 宏定义
 
 #define WINDOW_WIDTH			1280	//游戏窗口宽度
-#define WINDOW_HEIGHT			768	//游戏窗口高度
+#define WINDOW_HEIGHT			768		//游戏窗口高度
 #define WINDOW_TITLEBARHEIGHT	32		//标题栏高度
 
 
@@ -70,6 +70,8 @@
 #define BLOCK_SIZE_X			32		//方块的宽度
 #define BLOCK_SIZE_Y			32		//方块的高度
 
+#define NAME_WIDTH				210		//姓名栏宽度
+#define NAME_HEIGHT				27		//姓名栏高度
 
 
 #define HERO_SIZE_X				32		//主角的宽度
@@ -90,6 +92,7 @@
 #define BUTTON_RETRY				6	//重来按钮ID
 #define LABEL						7	//标签ID
 #define BUTTON_SELECT				8	//选关
+#define BUTTON_PAUSE				9	//暂停
 
 
 #define TIMER_GAMETIMER				1	//游戏的默认计时器ID
@@ -122,6 +125,18 @@ struct Button
 	int y;			//坐标y
 	int width;		//宽度
 	int height;		//高度
+};
+
+//姓名栏结构体
+struct Name
+{
+	bool visible;	//姓名栏是否可见
+	HBITMAP img;	//图片
+	int x;			//坐标x
+	int y;			//坐标y
+	int width;		//宽度
+	int height;		//高度
+	int frame;		//帧数
 };
 
 // 主角结构体
@@ -197,6 +212,8 @@ Block* CreateBlock(int blockID, HBITMAP img, int width, int height, int x, int y
 // 添加主角函数
 Hero* CreateHero(HBITMAP img, int x, int y);
 
+Name* CreateName(HBITMAP img, int x, int y);
+
 
 #pragma endregion
 
@@ -222,6 +239,9 @@ void InitMap(HWND hWnd, int stageID);
 
 // 刷新主角状态函数
 void UpdateHero(HWND hWnd);
+
+//刷新姓名栏函数
+void UpdateName();
 
 // 碰撞检测函数
 bool CollitionDetect(HWND hWnd);

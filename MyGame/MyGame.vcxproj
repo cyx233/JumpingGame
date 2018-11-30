@@ -159,9 +159,11 @@
   <ItemGroup>
     <Image Include="res\apple.bmp" />
     <Image Include="res\buttonback.bmp" />
+    <Image Include="res\buttoncontinue.bmp" />
     <Image Include="res\buttonmenu.bmp" />
     <Image Include="res\buttonpause.bmp" />
     <Image Include="res\buttonretry.bmp" />
+    <Image Include="res\name.bmp" />
     <Image Include="res\pedal.bmp" />
     <Image Include="res\pedalon.bmp" />
     <Image Include="res\save.bmp" />
