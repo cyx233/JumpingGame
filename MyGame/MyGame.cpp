@@ -628,24 +628,33 @@ void InitMap(HWND hWnd, int stageID)
 		}
 		case STAGE_1:
 		{
-
+			for (int i = 0; i < 27; i++)
+				if (i <= 5 || i >= 13)
+				{
+					normal = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
+					blocks.push_back(normal);
+				}
+				else
+				{
+					thorn = CreateBlock(STAGE_STARTMENU * 1000 + BLOCK_THORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
+					blocks.push_back(thorn);
+				}
+			
+					
 
 			break;
 		}
 		case STAGE_HELP_1:
 		{
 			for (int i = 0; i < 40; i++)
-			{
-				if (i <= 15 || i >= 25)
+				if (i <= 15 || (i >= 25&&i<=27))
 				{
 					normal = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
-					blocks.push_back(normal);
-
-					savepoint = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 568);
-					blocks.push_back(savepoint);
-					CurrentSave = savepoint;
+					blocks.push_back(normal); 
 				}
-			}
+			savepoint = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 568);
+			blocks.push_back(savepoint);
+			CurrentSave = savepoint;
 
 			thorn = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 16 * BLOCK_SIZE_X, 600);
 			thorn->m = 16 * BLOCK_SIZE_X; thorn->n = 24 * BLOCK_SIZE_X; thorn->vx = 2.0;
