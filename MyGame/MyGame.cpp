@@ -19,6 +19,7 @@ WCHAR szWindowClass[MAX_LOADSTRING]; // 主窗口类名
 //图像资源
 
 HBITMAP bmp_Background; //背景图像
+HBITMAP bmp_Title;
 
 HBITMAP bmp_StartButton;	//开始按钮图像
 HBITMAP bmp_HelpButton;		//帮助按钮图像
@@ -30,7 +31,6 @@ HBITMAP bmp_SelectButton;	//选关按钮图像
 HBITMAP bmp_PauseButton;	//继续按钮图像
 
 HBITMAP bmp_Name;			//姓名栏图像
-
 
 HBITMAP bmp_Hero; //主角图像
 
@@ -272,6 +272,7 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_RetryButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_RETRY));
 	bmp_PauseButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PAUSE));
 	bmp_ContinueButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_CONTINUE));
+	bmp_Title = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_TITLE));
 
 	//添加按钮
 
@@ -286,9 +287,12 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 	Button* menuButton = CreateButton(100 * 1000 + BUTTON_MENU, bmp_MenuButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1200, BLOCK_SIZE_Y + 5);
 	buttons.push_back(menuButton);
-
 	Button* retryButton = CreateButton(100 * 1000 + BUTTON_RETRY, bmp_RetryButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1200, BLOCK_SIZE_Y * 2 + 10);
 	buttons.push_back(retryButton);
+
+	Button* title = CreateButton(BUTTON_LABEL, bmp_Title, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+	buttons.push_back(title);
+
 
 	//初始化姓名栏
 	theName = CreateName(bmp_Name, 567, 700);
@@ -386,7 +390,7 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				switch (button->buttonID % 100) {
 					case BUTTON_STARTGAME:
 					{
-						InitStage(hWnd, STAGE_1);
+						InitStage(hWnd, STAGE_2);
 						break;
 					}
 					case BUTTON_HELP:
@@ -576,22 +580,26 @@ void InitBlock(HWND hWnd, int stageID)
 
 		if (block->blockID / 1000 == stageID)
 		{
-			block->visible = true;
+			switch (block->blockID % 100)
+			{
+				case BLOCK_FIRE:
+					block->visible = !((block->blockID % 1000) / 100);
+					break;
+				case BLOCK_ICE:
+					block->visible = !((block->blockID % 1000) / 100);
+					break;
+				case BLOCK_MOVETHORN:
+				{
+					block->visible = true;
+					block->turnon = !((block->blockID % 1000) / 100);
+					break;
+				}
+				default:
+					block->visible = true;
+			}
 		}
 		else
 			block->visible = false;
-
-		switch (block->blockID%100)
-		{
-			case BLOCK_FIRE:
-				block->visible = !((block->blockID % 1000) / 100);
-				break;
-			case BLOCK_ICE:
-				block->visible = !((block->blockID % 1000) / 100);
-				break;
-			case BLOCK_MOVETHORN:
-				block->turnon = !((block->blockID % 1000) / 100);
-		}
 	}
 }
 
@@ -628,33 +636,212 @@ void InitMap(HWND hWnd, int stageID)
 		}
 		case STAGE_1:
 		{
-			for (int i = 0; i < 27; i++)
-				if (i <= 5 || i >= 13)
+			onoff = CreateBlock(STAGE_1 * 1000 + BLOCK_ONOFF, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, 36 * BLOCK_SIZE_X, 5 * BLOCK_SIZE_Y);
+			onoff->link = 1;
+			blocks.push_back(onoff);
+
+			for (int i = 0; i < 40; i++)
+			{
+				for (int j = 0; j <= 5; j++)
 				{
-					normal = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
+					if (i == 36 && j == 5)
+						continue;
+					else
+					{
+						normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+				}
+
+				if (i <= 5 || (i >= 13 && i <= 16))
+				{
+					normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 14 * BLOCK_SIZE_Y);
 					blocks.push_back(normal);
 				}
-				else
+				else if (i <= 12)
 				{
-					thorn = CreateBlock(STAGE_STARTMENU * 1000 + BLOCK_THORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
+					thorn = CreateBlock(STAGE_1 * 1000 + BLOCK_THORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 14 * BLOCK_SIZE_Y);
 					blocks.push_back(thorn);
 				}
-			
-					
 
+				if (i >= 19 && i <= 26)
+				{
+					normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+					normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 13 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}
+
+				if (i <= 26 || i >= 31)
+					for (int j = 15; j <= 24; j++)
+					{
+						if (i >= 17 && j <= 18 && i <= 24)
+							continue;
+						else
+						{
+							normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+							blocks.push_back(normal);
+						}
+						if (i == 25 || i == 26)
+						{
+							normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 14 * BLOCK_SIZE_Y);
+							blocks.push_back(normal);
+						}
+
+					}
+
+				if (i >= 31)
+					for (int j = 9; j <= 14; j++)
+					{
+
+						normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+
+						normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 9 * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+
+					}
+
+			}
+
+			thorn = CreateBlock(STAGE_1 * 1000 + BLOCK_THORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 30 * BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
+			blocks.push_back(thorn);
+
+			for (int i = 14; i <= 18; i++)
+			{
+				fire = CreateBlock(STAGE_1 * 1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 19 * BLOCK_SIZE_X, i * BLOCK_SIZE_Y);
+				fire->link = 1;
+				blocks.push_back(fire);
+			}
+
+			for (int i = 6; i <= 11; i++)
+			{
+				fire = CreateBlock(STAGE_1 * 1000 + BLOCK_FIRE + 100, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 19 * BLOCK_SIZE_X, i * BLOCK_SIZE_Y);
+				fire->link = 1;
+				blocks.push_back(fire);
+			}
+
+			savepoint = CreateBlock(STAGE_1 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 14 * BLOCK_SIZE_Y - BLOCK_SIZE_Y);
+			blocks.push_back(savepoint);
+			CurrentSave = savepoint;
+
+			apple = CreateBlock(STAGE_1 * 1000 + BLOCK_APPLE, bmp_BlockApple, BLOCK_SIZE_X, BLOCK_SIZE_Y, 22 * BLOCK_SIZE_X, 18 * BLOCK_SIZE_Y);
+			blocks.push_back(apple);
 			break;
 		}
+
+		case STAGE_2:
+		{
+			for (int i = 0; i < 40; i++)
+			{
+				if (i <= 9)
+				{
+					if (i == 9)
+					{
+						pedal = CreateBlock(STAGE_2 * 1000 + BLOCK_PEDAL, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, i* BLOCK_SIZE_X, 18 * BLOCK_SIZE_Y);
+						pedal->link = 1;
+						blocks.push_back(pedal);
+					}
+					else
+					{
+						normal = CreateBlock(STAGE_2 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 18 * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+				}
+
+				for (int j = 19; j < 24; j++)
+				{
+					normal = CreateBlock(STAGE_2 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}
+
+				if (i > 9)
+				{
+					for (int j = 14; j <= 18; j++)
+					{
+						if (i == 19 && j == 14)
+						{
+							pedal = CreateBlock(STAGE_2 * 1000 + BLOCK_PEDAL, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, i* BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+							pedal->link = 2;
+							blocks.push_back(pedal);
+						}
+						else
+						{
+							normal = CreateBlock(STAGE_2 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+							blocks.push_back(normal);
+						}
+					}
+				}
+
+				if (i > 19)
+				{
+					for (int j = 11; j <= 14; j++)
+					{
+						normal = CreateBlock(STAGE_2 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+				}
+				if (i == 20)
+				{
+					for (int j = 6; j <= 10; j++)
+					{
+						fire = CreateBlock(STAGE_2 * 1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, i* BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+						fire->link = 1;
+						blocks.push_back(fire);
+					}
+				}
+				if (i > 30)
+				{
+					for (int j = 9; j <= 10; j++)
+					{
+						normal = CreateBlock(STAGE_2 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+				}
+
+			}
+
+
+
+			ice = CreateBlock(STAGE_2 * 1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 5 * BLOCK_SIZE_X, 17 * BLOCK_SIZE_Y);
+			blocks.push_back(ice);
+
+			ice = CreateBlock(STAGE_2 * 1000 + BLOCK_ICE, bmp_BlockIce, BLOCK_SIZE_X, BLOCK_SIZE_Y, 10 * BLOCK_SIZE_X, 10 * BLOCK_SIZE_Y);
+			blocks.push_back(ice);
+
+			fire = CreateBlock(STAGE_2 * 1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 8.5* BLOCK_SIZE_X, 17 * BLOCK_SIZE_Y);
+			fire->link = 2;
+			blocks.push_back(fire);
+
+			fire = CreateBlock(STAGE_2 * 1000 + BLOCK_FIRE + 100, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 6 * BLOCK_SIZE_X, 17 * BLOCK_SIZE_Y);
+			fire->link = 2;
+			blocks.push_back(fire);
+
+
+
+			savepoint = CreateBlock(STAGE_2 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 17 * BLOCK_SIZE_Y);
+			blocks.push_back(savepoint);
+			CurrentSave = savepoint;
+
+			apple = CreateBlock(STAGE_2 * 1000 + BLOCK_APPLE, bmp_BlockApple, BLOCK_SIZE_X, BLOCK_SIZE_Y, 35 * BLOCK_SIZE_X, 8 * BLOCK_SIZE_Y);
+			blocks.push_back(apple);
+
+		}
+
 		case STAGE_HELP_1:
 		{
 			for (int i = 0; i < 40; i++)
-				if (i <= 15 || (i >= 25&&i<=27))
+			{
+				if (i <= 15 || i >= 25)
 				{
 					normal = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 600);
-					blocks.push_back(normal); 
+					blocks.push_back(normal);
+
+					savepoint = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 568);
+					blocks.push_back(savepoint);
+					CurrentSave = savepoint;
 				}
-			savepoint = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 568);
-			blocks.push_back(savepoint);
-			CurrentSave = savepoint;
+			}
 
 			thorn = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 16 * BLOCK_SIZE_X, 600);
 			thorn->m = 16 * BLOCK_SIZE_X; thorn->n = 24 * BLOCK_SIZE_X; thorn->vx = 2.0;
@@ -691,6 +878,7 @@ void InitMap(HWND hWnd, int stageID)
 			}
 
 
+
 			savepoint = CreateBlock(STAGE_HELP_2 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 568);
 			blocks.push_back(savepoint);
 			CurrentSave = savepoint;
@@ -715,7 +903,7 @@ void InitMap(HWND hWnd, int stageID)
 				blocks.push_back(fire);
 			}
 
-			pedal = CreateBlock(STAGE_HELP_3 * 1000 + BLOCK_PEDAL, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, 38 * BLOCK_SIZE_X, 568);
+			pedal = CreateBlock(STAGE_HELP_3 * 1000 + BLOCK_PEDAL, bmp_BlockPedal, BLOCK_SIZE_X, BLOCK_SIZE_Y, 22 * BLOCK_SIZE_X, 568);
 			pedal->link = 1;
 			blocks.push_back(pedal);
 
@@ -841,10 +1029,10 @@ void InitStage(HWND hWnd, int stageID)
 	}
 	switch (stageID)
 	{
+		case STAGE_1:
+			theHero = CreateHero(bmp_Hero, 0, 400);
 		case STAGE_STARTSTORY:
-		{
 			break;
-		}
 		default:
 			theHero = CreateHero(bmp_Hero, 0,530);
 			break;
@@ -883,7 +1071,7 @@ void TrapDetect(HWND hWnd)
 				{
 					case BLOCK_THORN://尖刺方块判定
 					{
-						body = CreateBlock(1000 + BLOCK_STILLBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
+						body = CreateBlock(1000 * currentStage->stageID + BLOCK_STILLBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
 						body->visible = true;
 						blocks.push_back(body);
 						delete theHero;
@@ -892,7 +1080,7 @@ void TrapDetect(HWND hWnd)
 					}
 					case BLOCK_MOVETHORN://移动尖刺判定
 					{
-						body = CreateBlock(1000 + BLOCK_STICKBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
+						body = CreateBlock(1000 * currentStage->stageID + BLOCK_STICKBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
 						body->visible = true;
 						blocks.push_back(body);
 						delete theHero;
@@ -901,7 +1089,7 @@ void TrapDetect(HWND hWnd)
 					}
 					case BLOCK_FIRE://火焰方块判定
 					{
-						body = CreateBlock(1000 + BLOCK_BURNEDBODY, bmp_BurnedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
+						body = CreateBlock(1000 * currentStage->stageID + BLOCK_BURNEDBODY, bmp_BurnedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
 						body->visible = true;
 						blocks.push_back(body);
 						delete theHero;
@@ -910,7 +1098,7 @@ void TrapDetect(HWND hWnd)
 					}
 					case BLOCK_ICE://冰焰方块判定
 					{
-						body = CreateBlock(1000 + BLOCK_FREEZE, bmp_FreezedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
+						body = CreateBlock(1000 * currentStage->stageID + BLOCK_FREEZE, bmp_FreezedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
 						body->visible = true;
 						blocks.push_back(body);
 						delete theHero;
@@ -1013,7 +1201,8 @@ bool CollitionDetect(HWND hWnd)
 
 
 					if (theHero->y + HERO_SIZE_Y == block->y
-						&&abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定主角落在方块上
+						&&abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
+						&& theHero->vy == 0) //判定主角落在方块上
 					{
 						onground = true;
 						theHero->basevx = block->vx;
@@ -1153,7 +1342,7 @@ void BodyTrapDetect(HWND hwnd,Block*body)
 							body->m ++;
 							if (body->m == 25) 
 							{
-								body->blockID = BLOCK_MOVABLEBODY;
+								body->blockID = currentStage->stageID * 1000 + BLOCK_MOVABLEBODY;
 								body->m = 0;
 							}
 						}
@@ -1178,7 +1367,7 @@ void BodyTrapDetect(HWND hwnd,Block*body)
 					{
 						case BLOCK_FIRE://火焰方块判定
 						{
-							body->blockID = BLOCK_BURNEDBODY;
+							body->blockID = 1000 * currentStage->stageID + BLOCK_BURNEDBODY;
 							body->img = bmp_BurnedBody;
 							return;
 						}
@@ -1406,27 +1595,28 @@ void TriggerP(HWND hWnd, Block*pedal)
 					break;
 				else
 					continue;
-			if (block->link == pedal->link)
-			{
-				switch (block->blockID % 100)
+			if (block->blockID / 1000 == currentStage->stageID)
+				if (block->link == pedal->link)
 				{
-					case BLOCK_MOVETHORN:
+					switch (block->blockID % 100)
 					{
-						block->turnon = (block->blockID % 1000) / 100;
-						break;
-					}
-					case BLOCK_FIRE:
-					{
-						block->visible = (block->blockID % 1000) / 100;
-						break;
-					}
-					case BLOCK_ICE:
-					{
-						block->visible = (block->blockID % 1000) / 100;
-						break;
+						case BLOCK_MOVETHORN:
+						{
+							block->turnon = (block->blockID % 1000) / 100;
+							break;
+						}
+						case BLOCK_FIRE:
+						{
+							block->visible = (block->blockID % 1000) / 100;
+							break;
+						}
+						case BLOCK_ICE:
+						{
+							block->visible = (block->blockID % 1000) / 100;
+							break;
+						}
 					}
 				}
-			}
 		}
 	else
 		for (int i = 0; i < blocks.size(); i++)
@@ -1438,27 +1628,28 @@ void TriggerP(HWND hWnd, Block*pedal)
 					break;
 				else
 					continue;
-			if (block->link == pedal->link)
-			{
-				switch (block->blockID % 100)
+			if (block->blockID / 1000 == currentStage->stageID)
+				if (block->link == pedal->link)
 				{
-					case BLOCK_MOVETHORN:
+					switch (block->blockID % 100)
 					{
-						block->turnon = !((block->blockID % 1000) / 100);
-						break;
-					}
-					case BLOCK_FIRE:
-					{
-						block->visible = !((block->blockID % 1000) / 100);
-						break;
-					}
-					case BLOCK_ICE:
-					{
-						block->visible = !((block->blockID % 1000) / 100);
-						break;
+						case BLOCK_MOVETHORN:
+						{
+							block->turnon = !((block->blockID % 1000) / 100);
+							break;
+						}
+						case BLOCK_FIRE:
+						{
+							block->visible = !((block->blockID % 1000) / 100);
+							break;
+						}
+						case BLOCK_ICE:
+						{
+							block->visible = !((block->blockID % 1000) / 100);
+							break;
+						}
 					}
 				}
-			}
 		}
 	return;
 }
@@ -1493,24 +1684,59 @@ void TriggerOnOff(HWND hWnd, Block*onoff)
 					break;
 				else
 					continue;
-			if (block->link == onoff->link)
-				switch (block->blockID % 100)
+			if (block->blockID / 1000 == currentStage->stageID)
+				if (block->link == onoff->link)
+					switch (block->blockID % 100)
+					{
+						case BLOCK_MOVETHORN:
+						{
+							block->turnon = (block->blockID % 1000) / 100;
+						}
+						case BLOCK_FIRE:
+						{
+							block->visible = (block->blockID % 1000) / 100;
+						}
+						case BLOCK_ICE:
+						{
+							block->visible = (block->blockID % 1000) / 100;
+						}
+					}
+		}
+	}
+	else
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			Block* block = blocks[i];
+			if ((block->x == onoff->x)
+				&& (block->y == onoff->y))
+				if (i == blocks.size())
+					break;
+				else
+					continue;
+			if (block->blockID / 1000 == currentStage->stageID)
+				if (block->link == onoff->link)
 				{
-					case BLOCK_MOVETHORN:
+					switch (block->blockID % 100)
 					{
-						block->turnon = (block->blockID % 1000) / 100;
-					}
-					case BLOCK_FIRE:
-					{
-						block->visible = (block->blockID % 1000) / 100;
-					}
-					case BLOCK_ICE:
-					{
-						block->visible = (block->blockID % 1000) / 100;
+						case BLOCK_MOVETHORN:
+						{
+							block->turnon = !((block->blockID % 1000) / 100);
+							break;
+						}
+						case BLOCK_FIRE:
+						{
+							block->visible = !((block->blockID % 1000) / 100);
+							break;
+						}
+						case BLOCK_ICE:
+						{
+							block->visible = !((block->blockID % 1000) / 100);
+							break;
+						}
 					}
 				}
 		}
-	}
+	return;
 }
 
 
@@ -1521,113 +1747,114 @@ void UpdateSurround(HWND hWnd)
 	for (int i = 0; i < blocks.size(); i++)
 	{
 		Block*block = blocks[i];
-		if (block->visible)
-			switch (block->blockID % 100)
-			{
-				case BLOCK_BURNEDBODY://燃烧尸体
+		if (block->blockID / 1000 == currentStage->stageID)
+			if (block->visible)
+				switch (block->blockID % 100)
 				{
-					block->m++;
-					if (block->m == 5)
+					case BLOCK_BURNEDBODY://燃烧尸体
+					{
+						block->m++;
+						if (block->m == 5)
+						{
+							block->frame++;
+							block->m = 0;
+						}
+						if (block->frame > 10)
+							block->visible = false;
+						break;
+					}
+
+					case BLOCK_FIRE://火焰动画
 					{
 						block->frame++;
-						block->m = 0;
+						if (block->frame > 31)
+							block->frame = 0;
+						break;
 					}
-					if (block->frame > 10)
-						block->visible = false;
-					break;
-				}
 
-				case BLOCK_FIRE://火焰动画
-				{
-					block->frame++;
-					if (block->frame > 31)
-						block->frame = 0;
-					break;
-				}
-
-				case BLOCK_ICE://冰焰动画
-				{
-					block->frame++;
-					if (block->frame > 31)
-						block->frame = 0;
-					break;
-				}
-
-				case BLOCK_MOVABLEBODY://可移动尸体
-				{
-					UpdateBody(hWnd,block);
-					break;
-				}
-				case BLOCK_FREEZE://冰冻尸体
-				{
-					UpdateBody(hWnd, block);
-					break;
-				}
-				
-				case BLOCK_PEDAL://踏板
-				{
-					TriggerP(hWnd,block);
-					break;
-				}
-
-				case BLOCK_ONOFF://开关
-				{
-					TriggerOnOff(hWnd, block);
-					break;
-				}
-
-				case BLOCK_MOVETHORN://移动尖刺
-				{
-					if (block->turnon = true)
+					case BLOCK_ICE://冰焰动画
 					{
-						if ((block->x >= block->n && block->vx >= 0)
-							|| (block->x <= block->m && block->vx <= 0))
-							block->vx = -block->vx;
+						block->frame++;
+						if (block->frame > 31)
+							block->frame = 0;
+						break;
+					}
 
-						if ((block->y >= block->n && block->vy >= 0)
-							|| (block->y <= block->m && block->vy <= 0))
-							block->vy = -block->vy;
+					case BLOCK_MOVABLEBODY://可移动尸体
+					{
+						UpdateBody(hWnd, block);
+						break;
+					}
+					case BLOCK_FREEZE://冰冻尸体
+					{
+						UpdateBody(hWnd, block);
+						break;
+					}
+
+					case BLOCK_PEDAL://踏板
+					{
+						TriggerP(hWnd, block);
+						break;
+					}
+
+					case BLOCK_ONOFF://开关
+					{
+						TriggerOnOff(hWnd, block);
+						break;
+					}
+
+					case BLOCK_MOVETHORN://移动尖刺
+					{
+						if (block->turnon = true)
+						{
+							if ((block->x >= block->n && block->vx >= 0)
+								|| (block->x <= block->m && block->vx <= 0))
+								block->vx = -block->vx;
+
+							if ((block->y >= block->n && block->vy >= 0)
+								|| (block->y <= block->m && block->vy <= 0))
+								block->vy = -block->vy;
+
+							//计算位移
+							block->x += (int)(block->vx);
+							block->y += (int)(block->vy);
+						}
+						break;
+					}
+
+					case BLOCK_STICKBODY://插在尖刺上的尸体
+					{
+						int min = 1638400;
+						for (int i = 0; i < blocks.size(); i++)
+						{
+							Block* block2 = blocks[i];
+							int dirX = block2->x - block->x;
+							int dirY = block2->y - block->y;
+							if (block2->visible &&
+								(block2->blockID % 100 == BLOCK_MOVETHORN))
+							{
+								if (dirX*dirX + dirY * dirY < min)
+								{
+									block->vx = block2->vx;
+									block->vy = block2->vy;
+									min = dirX * dirX + dirY * dirY;
+								}
+							}
+						}
 
 						//计算位移
 						block->x += (int)(block->vx);
 						block->y += (int)(block->vy);
-					}
-					break;
-				}
 
-				case BLOCK_STICKBODY://插在尖刺上的尸体
-				{
-					int min = 1638400;
-					for (int i = 0; i < blocks.size(); i++)
-					{
-						Block* block2 = blocks[i];
-						int dirX = block2->x - block->x;
-						int dirY = block2->y - block->y;
-						if (block2->visible &&
-							(block2->blockID % 100 == BLOCK_MOVETHORN))
-						{
-							if (dirX*dirX + dirY * dirY < min)
-							{
-								block->vx = block2->vx;
-								block->vy = block2->vy;
-								min = dirX * dirX + dirY * dirY;
-							}
-						}
+						BodyTrapDetect(hWnd, block);//陷阱检测
+
+						break;
 					}
 
-					//计算位移
-					block->x += (int)(block->vx);
-					block->y += (int)(block->vy);
 
-					BodyTrapDetect(hWnd, block);//陷阱检测
-
-					break;
+					default:
+						break;
 				}
-
-
-				default:
-					break;
-			}
 	}
 }
 
@@ -1717,12 +1944,22 @@ void Paint(HWND hWnd)
 				break;
 			
 			default:
+			{
+				SelectObject(hdc_loadBmp, bmp_Background);
+				TransparentBlt(
+					hdc_memBuffer, theName->x, theName->y,
+					NAME_WIDTH, NAME_HEIGHT,
+					hdc_loadBmp, theName->x, theName->y, NAME_WIDTH, NAME_HEIGHT,
+					RGB(255, 255, 255));
+
 				SelectObject(hdc_loadBmp, theName->img);
 				TransparentBlt(
 					hdc_memBuffer, theName->x, theName->y,
 					NAME_WIDTH, NAME_HEIGHT,
 					hdc_loadBmp, 0, theName->frame*NAME_HEIGHT, NAME_WIDTH, NAME_HEIGHT,
 					RGB(255, 255, 255));
+
+			}
 		}
 
 

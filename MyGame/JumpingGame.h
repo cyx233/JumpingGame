@@ -91,9 +91,9 @@
 #define BUTTON_BACK					4	//返回按钮ID
 #define BUTTON_CONTINUE				5	//继续按钮ID
 #define BUTTON_RETRY				6	//重来按钮ID
-#define LABEL						7	//标签ID
-#define BUTTON_SELECT				8	//选关
-#define BUTTON_PAUSE				9	//暂停
+#define BUTTON_LABEL				7	//标签ID
+#define BUTTON_SELECT				8	//选关ID
+#define BUTTON_PAUSE				9	//暂停ID
 
 
 #define TIMER_GAMETIMER				1	//游戏的默认计时器ID

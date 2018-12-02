@@ -180,6 +180,7 @@
     <Image Include="res\slime.bmp" />
     <Image Include="res\start.bmp" />
     <Image Include="res\thorn.bmp" />
+    <Image Include="res\title.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

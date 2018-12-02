@@ -26,15 +26,16 @@
 #define IDB_BITMAP_PEDALON              193
 #define IDB_BITMAP_APPLE                194
 #define IDB_BITMAP_CONTINUE             195
-#define IDB_BITMAP1                     197
 #define IDB_BITMAP_NAME                 197
+#define IDB_BITMAP1                     198
+#define IDB_BITMAP_TITLE                198
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        198
+#define _APS_NEXT_RESOURCE_VALUE        199
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110
