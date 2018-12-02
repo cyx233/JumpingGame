@@ -44,7 +44,7 @@
 #define STAGE_HELP_1			8		//帮助场景ID 同伴不会白白死去，他们会为我们铺出道路 方向键操作 空格键复活
 #define STAGE_HELP_2			9		//让火焰净化一切
 #define STAGE_HELP_3			10		//短道速滑，，要快！
-#define STAGE_HELP_4			11		//水晶控制元素，末影之眼控制空间
+#define STAGE_HELP_4			11		//水晶控制元素，末影之眼控制传送
 
 #define STAGE_ENDSTORY			12		//结局故事
 

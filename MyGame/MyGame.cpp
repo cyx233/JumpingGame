@@ -19,7 +19,7 @@ WCHAR szWindowClass[MAX_LOADSTRING]; // 主窗口类名
 //图像资源
 
 HBITMAP bmp_Background; //背景图像
-HBITMAP bmp_Title;
+HBITMAP bmp_Title;		//标题背景
 
 HBITMAP bmp_StartButton;	//开始按钮图像
 HBITMAP bmp_HelpButton;		//帮助按钮图像
