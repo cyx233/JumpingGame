@@ -164,6 +164,7 @@
     <Image Include="res\buttonpause.bmp" />
     <Image Include="res\buttonretry.bmp" />
     <Image Include="res\name.bmp" />
+    <Image Include="res\onoff.bmp" />
     <Image Include="res\pedal.bmp" />
     <Image Include="res\pedalon.bmp" />
     <Image Include="res\save.bmp" />
