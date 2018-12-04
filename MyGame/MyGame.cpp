@@ -915,6 +915,53 @@ void InitMap(HWND hWnd, int stageID)
 			break;
 		}
 		
+		case STAGE_4:
+		{
+			for (int i = 0; i < 40; i++)
+			{
+				for(int j=19;j<24;j++)
+				{
+					normal = CreateBlock(STAGE_4 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}
+				
+				
+				if(i<5&&i>0)
+				{
+					normal = CreateBlock(STAGE_4 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 14 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}
+				
+				
+				if(i<7)
+				{
+					normal = CreateBlock(STAGE_4 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 18 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}
+				
+				
+				if(i>7)
+				{
+					if(i!=40)
+					{
+						normal = CreateBlock(STAGE_4 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 16 * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+					normal = CreateBlock(STAGE_4 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 17 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+					
+					normal = CreateBlock(STAGE_4 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 18 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}	
+			}
+			
+			for(int i=11;i<16;i++)
+			{
+				
+			}
+			
+		}
+		
 		case STAGE_HELP_1:
 		{
 			for (int i = 0; i < 40; i++)
