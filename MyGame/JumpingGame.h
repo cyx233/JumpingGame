@@ -26,7 +26,7 @@
 
 #pragma region 宏定义
 
-#define WINDOW_WIDTH			1280	//游戏窗口宽度
+#define WINDOW_WIDTH			1296	//游戏窗口宽度
 #define WINDOW_HEIGHT			768		//游戏窗口高度
 #define WINDOW_TITLEBARHEIGHT	32		//标题栏高度
 
