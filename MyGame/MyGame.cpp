@@ -1149,16 +1149,14 @@ void InitMap(HWND hWnd, int stageID)
 			savepoint = CreateBlock(STAGE_5 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 * BLOCK_SIZE_X, 19 * BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
 			CurrentSave = savepoint;
+
+			savepoint = CreateBlock(STAGE_5 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 * BLOCK_SIZE_X, 13 * BLOCK_SIZE_Y);
+			blocks.push_back(savepoint);
+			CurrentSave = savepoint;
 		}
 
 		case STAGE_HELP_1:
 		{
-			for (int i = 0; i < 24; i++)
-			{
-				normal = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, 24*BLOCK_SIZE_X, i*BLOCK_SIZE_Y);
-				blocks.push_back(normal);
-			}
-
 			for (int i = 0; i < 40; i++)
 			{
 				if (i <= 15 || i >= 25)
@@ -1484,6 +1482,7 @@ bool CollitionDetect(HWND hWnd)
 	int herocenterX = theHero->x + HERO_SIZE_X / 2;
 	int herocenterY = theHero->y + HERO_SIZE_Y / 2;
 	int blockX = 0, blockY = 0;
+	bool flag = false;
 
 	//方块检测
 	for (int i = 0; i < blocks.size(); i++)
@@ -1542,6 +1541,14 @@ bool CollitionDetect(HWND hWnd)
 						}
 					}
 
+					if (theHero->y + HERO_SIZE_Y == block->y
+						&&abs(herocenterX - blockX) < (block->width + HERO_SIZE_X) / 2
+						&& theHero->vy == 0) //判定主角落在方块上
+					{
+						onground = true;
+						theHero->basevx = block->vx;
+					}
+
 					if (abs(herocenterX - blockX) < (block->width  + HERO_SIZE_X) / 2
 						&& abs(herocenterY - blockY) <= (block->height  + HERO_SIZE_Y) / 2) //判定碰撞，边界条件改变
 					{
@@ -1557,20 +1564,15 @@ bool CollitionDetect(HWND hWnd)
 								while ((theHero->x + HERO_SIZE_X) > block->x)theHero->x -= 1;
 								theHero->vx = 0;
 							}
+							flag = true;
 						}
-					}
-
-					if (theHero->y + HERO_SIZE_Y == block->y
-						&&abs(herocenterX - blockX) < (block->width + HERO_SIZE_X) / 2
-						&& theHero->vy == 0) //判定主角落在方块上
-					{
-						onground = true;
-						theHero->basevx = block->vx;
 					}
 					break;
 				}
 			}
 	}
+	if (flag)
+		return false;
 	return onground;
 }
 
@@ -1723,6 +1725,7 @@ void BodyTrapDetect(HWND hwnd,Block*body)
 bool BodyCollitionDetect(HWND hwnd, Block*body)
 {
 	bool onground = false; //是否落地
+	bool flag = false;
 	int bodycenterX = body->x + HERO_SIZE_X / 2;
 	int bodycenterY = body->y + HERO_SIZE_Y / 2;
 	int blockX = 0, blockY = 0;
@@ -1749,6 +1752,10 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 				}
 			}
 
+			if (body->y + HERO_SIZE_Y == theHero->y
+				&&abs(bodycenterX - herocenterX) < body->width / 2 + HERO_SIZE_X / 2) //判定尸体落在主角上
+				onground = true;
+
 			if (body->width / 2 + HERO_SIZE_Y / 2 - abs(herocenterY - bodycenterY) >
 				body->height / 2 + HERO_SIZE_X / 2 - abs(herocenterX - bodycenterX))//判定此次碰撞为横向碰撞
 			{
@@ -1761,10 +1768,6 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 				}
 				body->vx = theHero->vx;
 			}
-
-			if (body->y + HERO_SIZE_Y == theHero->y
-				&&abs(bodycenterX - herocenterX) < body->width / 2 + HERO_SIZE_X / 2) //判定尸体落在主角上
-				onground = true;
 		}
 	}
 
@@ -1822,6 +1825,10 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 						}
 					}
 
+					if (body->y + HERO_SIZE_Y == block->y
+						&&abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定尸体落在方块上
+						onground = true;
+
 					if (abs(bodycenterX - blockX) <= block->width / 2 + HERO_SIZE_X / 2
 						&& abs(bodycenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞，边界条件改变
 					{
@@ -1863,10 +1870,6 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 							}
 						}
 					}
-
-					if (body->y + HERO_SIZE_Y == block->y
-						&&abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定尸体落在方块上
-						onground = true;
 				}
 			}	
 	}
