@@ -166,6 +166,8 @@ struct Block
 	int height;		//高度
 	double vx;		//横坐标速度
 	double vy;		//纵坐标速度
+	double prevx;	//暂停前横坐标速度
+	double prevy;	//暂停前纵坐标速度
 	int m;			//辅助变量m
 	int n;			//辅助变量n
 	int link;		//关联变量

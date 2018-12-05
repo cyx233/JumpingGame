@@ -391,12 +391,12 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				switch (button->buttonID % 100) {
 					case BUTTON_STARTGAME:
 					{
-						InitStage(hWnd, STAGE_4);
+						InitStage(hWnd, STAGE_5);
 						break;
 					}
 					case BUTTON_HELP:
 					{
-						InitStage(hWnd, STAGE_HELP_3);
+						InitStage(hWnd, STAGE_HELP_1);
 						break;
 					}
 					case BUTTON_MENU:
@@ -534,6 +534,8 @@ Block* CreateBlock(int blockID, HBITMAP img, int width, int height, int x, int y
 	block->visible = false;
 	block->frame = 0;
 	block->vx = 0;
+	block->prevx = 0;
+	block->prevy = 0;
 	block->m = 0;
 	block->n = 0;
 	block->turnon = false;
@@ -1055,8 +1057,108 @@ void InitMap(HWND hWnd, int stageID)
 
 		}
 
+		case STAGE_5:
+		{
+			for (int i = 0; i < 40; i++)
+			{
+				if (i > 14 || i < 6)
+				{
+					if (i <= 20) 
+					{
+						normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 20 * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+					for (int j = 21; j < 24; j++)
+					{
+						normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+				}
+
+				if(i < 19)
+				{
+					if (i > 6)
+					{
+						normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 16 * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+					else
+					{
+						normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 14 * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+						normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 15 * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+						normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 16 * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+
+				}
+
+				if (i > 8 && i < 14 && i != 11)
+				{
+					normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}
+
+				if (i > 20)
+				{
+					normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 18 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+					for (int j = 19; j < 24; j++)
+					{
+						normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
+						blocks.push_back(normal);
+					}
+				}
+
+				if (i > 25)
+				{
+					normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
+					blocks.push_back(normal);
+				}
+				if (i <= 25 && i > 20)
+				{
+					fire = CreateBlock(STAGE_5 * 1000 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, i * BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
+					fire->link = 1;
+					blocks.push_back(fire);
+				}
+			}
+
+			for (int i = 7; i <= 12; i++)
+			{
+				fire = CreateBlock(STAGE_5 * 1100 + BLOCK_FIRE, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 16 * BLOCK_SIZE_X, i * BLOCK_SIZE_Y);
+				fire->link = 1;
+				blocks.push_back(fire);
+			}
+
+			thorn = CreateBlock(STAGE_5 * 1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 6 * BLOCK_SIZE_X, 20 * BLOCK_SIZE_Y);
+			thorn->m = 6 * BLOCK_SIZE_X; thorn->n = 14 * BLOCK_SIZE_X; thorn->vx = 2.0;
+			blocks.push_back(thorn);
+
+			thorn = CreateBlock(STAGE_5 * 1000 + BLOCK_MOVETHORN, bmp_BlockThorn, BLOCK_SIZE_X, BLOCK_SIZE_Y, 14 * BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
+			thorn->m = 14 * BLOCK_SIZE_X; thorn->n = 25 * BLOCK_SIZE_X; thorn->vx = 2.0; thorn->link = 1;
+			blocks.push_back(thorn);
+
+			onoff = CreateBlock(STAGE_5 * 1000 + BLOCK_ONOFF, bmp_BlockOnoff, BLOCK_SIZE_X, BLOCK_SIZE_Y, 11 * BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
+			onoff->link = 1;
+			blocks.push_back(onoff);
+
+			apple = CreateBlock(STAGE_5 * 1000 + BLOCK_APPLE, bmp_BlockApple, BLOCK_SIZE_X, BLOCK_SIZE_Y, 35 * BLOCK_SIZE_X, 11 * BLOCK_SIZE_Y);
+			blocks.push_back(apple);
+
+			savepoint = CreateBlock(STAGE_5 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 * BLOCK_SIZE_X, 19 * BLOCK_SIZE_Y);
+			blocks.push_back(savepoint);
+			CurrentSave = savepoint;
+		}
+
 		case STAGE_HELP_1:
 		{
+			for (int i = 0; i < 24; i++)
+			{
+				normal = CreateBlock(STAGE_HELP_1 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, 24*BLOCK_SIZE_X, i*BLOCK_SIZE_Y);
+				blocks.push_back(normal);
+			}
+
 			for (int i = 0; i < 40; i++)
 			{
 				if (i <= 15 || i >= 25)
@@ -1383,7 +1485,6 @@ bool CollitionDetect(HWND hWnd)
 	int herocenterY = theHero->y + HERO_SIZE_Y / 2;
 	int blockX = 0, blockY = 0;
 
-
 	//方块检测
 	for (int i = 0; i < blocks.size(); i++)
 	{
@@ -1401,7 +1502,7 @@ bool CollitionDetect(HWND hWnd)
 
 				case BLOCK_BURNEDBODY:
 					break;
-				
+
 				case BLOCK_APPLE:
 					break;
 
@@ -1421,6 +1522,7 @@ bool CollitionDetect(HWND hWnd)
 
 				default://一般方块判定
 				{
+
 					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
 						&& abs(herocenterY - blockY) < block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
 					{
@@ -1440,33 +1542,30 @@ bool CollitionDetect(HWND hWnd)
 						}
 					}
 
-
-					if (theHero->y + HERO_SIZE_Y == block->y
-						&&abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
-						&& theHero->vy == 0) //判定主角落在方块上
-					{
-						onground = true;
-						theHero->basevx = block->vx;
-					}
-
-
-					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
-						&& abs(herocenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞，边界条件改变
+					if (abs(herocenterX - blockX) < (block->width  + HERO_SIZE_X) / 2
+						&& abs(herocenterY - blockY) <= (block->height  + HERO_SIZE_Y) / 2) //判定碰撞，边界条件改变
 					{
 						if (block->width / 2 + HERO_SIZE_Y / 2 - abs(herocenterY - blockY) >
 							block->height / 2 + HERO_SIZE_X / 2 - abs(herocenterX - blockX)) //判定此次碰撞为横向碰撞
 						{
 							if (herocenterX > blockX) //判定从方块右面碰撞
 							{
-								while (theHero->x < block->x + BLOCK_SIZE_X)theHero->x += 1;
+								while (theHero->x < (block->x + BLOCK_SIZE_X))theHero->x += 1;
 								theHero->vx = 0;
 							}
 							else { //判定从方块左面碰撞
-								while (theHero->x + HERO_SIZE_X > block->x)theHero->x -= 1;
+								while ((theHero->x + HERO_SIZE_X) > block->x)theHero->x -= 1;
 								theHero->vx = 0;
 							}
-							onground = false; //判定撞墙，不算落地
 						}
+					}
+
+					if (theHero->y + HERO_SIZE_Y == block->y
+						&&abs(herocenterX - blockX) < (block->width + HERO_SIZE_X) / 2
+						&& theHero->vy == 0) //判定主角落在方块上
+					{
+						onground = true;
+						theHero->basevx = block->vx;
 					}
 					break;
 				}
@@ -1650,10 +1749,6 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 				}
 			}
 
-			if (body->y + HERO_SIZE_Y == theHero->y
-				&&abs(bodycenterX - herocenterX) < body->width / 2 + HERO_SIZE_X / 2) //判定尸体落在主角上
-				onground = true;
-
 			if (body->width / 2 + HERO_SIZE_Y / 2 - abs(herocenterY - bodycenterY) >
 				body->height / 2 + HERO_SIZE_X / 2 - abs(herocenterX - bodycenterX))//判定此次碰撞为横向碰撞
 			{
@@ -1666,6 +1761,10 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 				}
 				body->vx = theHero->vx;
 			}
+
+			if (body->y + HERO_SIZE_Y == theHero->y
+				&&abs(bodycenterX - herocenterX) < body->width / 2 + HERO_SIZE_X / 2) //判定尸体落在主角上
+				onground = true;
 		}
 	}
 
@@ -1723,10 +1822,6 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 						}
 					}
 
-					if (body->y + HERO_SIZE_Y == block->y
-						&&abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定尸体落在方块上
-						onground = true;
-
 					if (abs(bodycenterX - blockX) <= block->width / 2 + HERO_SIZE_X / 2
 						&& abs(bodycenterY - blockY) <= block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞，边界条件改变
 					{
@@ -1768,6 +1863,10 @@ bool BodyCollitionDetect(HWND hwnd, Block*body)
 							}
 						}
 					}
+
+					if (body->y + HERO_SIZE_Y == block->y
+						&&abs(bodycenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2) //判定尸体落在方块上
+						onground = true;
 				}
 			}	
 	}
@@ -1953,14 +2052,17 @@ void TriggerOnOff(HWND hWnd, Block*onoff)
 						case BLOCK_MOVETHORN:
 						{
 							block->turnon = (block->blockID % 1000) / 100;
+							break;
 						}
 						case BLOCK_FIRE:
 						{
 							block->visible = (block->blockID % 1000) / 100;
+							break;
 						}
 						case BLOCK_ICE:
 						{
 							block->visible = (block->blockID % 1000) / 100;
+							break;
 						}
 					}
 		}
@@ -2067,8 +2169,12 @@ void UpdateSurround(HWND hWnd)
 
 					case BLOCK_MOVETHORN://移动尖刺
 					{
-						if (block->turnon = true)
+						if (block->turnon == true)
 						{
+							if (block->vx == 0)
+							{
+								block->vx = block->prevx;
+							}
 							if ((block->x >= block->n && block->vx >= 0)
 								|| (block->x <= block->m && block->vx <= 0))
 								block->vx = -block->vx;
@@ -2079,7 +2185,11 @@ void UpdateSurround(HWND hWnd)
 
 							//计算位移
 							block->x += (int)(block->vx);
-							block->y += (int)(block->vy);
+						}
+						else if (block->vx != 0)
+						{
+							block->prevx = block->vx;
+							block->vx = 0;
 						}
 						break;
 					}
