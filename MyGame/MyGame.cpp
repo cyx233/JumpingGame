@@ -67,6 +67,7 @@ bool keyDownDown = false; //下键
 bool keyLeftDown = false; //左键
 bool keyRightDown = false; //右键
 bool keySpaceDown = false; //空格键
+bool keyEscDown = false;//Esc键
 
 double const PI = acos(double(-1));
 #pragma endregion
@@ -333,6 +334,50 @@ void KeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_SPACE:
 			keySpaceDown = true;
 			break;
+		case VK_ESCAPE:
+		{
+			if (!keyEscDown)
+			{
+				if (currentStage->timerOn)
+					for (int i = 0; i < buttons.size(); i++)
+					{
+						Button* button = buttons[i];
+						if (button->visible&&
+							button->buttonID == currentStage->stageID * 1000 + BUTTON_PAUSE)
+						{
+							button->buttonID = button->buttonID - BUTTON_PAUSE + BUTTON_CONTINUE;
+							button->img = bmp_ContinueButton;
+						}
+
+						if ((buttons[i]->buttonID == 100 * 1000 + BUTTON_MENU)
+							|| (buttons[i]->buttonID == 100 * 1000 + BUTTON_RETRY))
+							buttons[i]->visible = true;
+						InvalidateRect(hWnd, NULL, FALSE);
+						currentStage->timerOn = false;
+					}
+				else
+				{
+					for (int i = 0; i < buttons.size(); i++)
+					{
+						Button* button = buttons[i];
+						if (button->visible&&
+							button->buttonID == currentStage->stageID * 1000 + BUTTON_CONTINUE)
+						{
+							button->buttonID = button->buttonID - BUTTON_CONTINUE + BUTTON_PAUSE;
+							button->img = bmp_PauseButton;
+						}
+
+						if ((buttons[i]->buttonID == 100 * 1000 + BUTTON_MENU)
+							|| (buttons[i]->buttonID == 100 * 1000 + BUTTON_RETRY))
+							buttons[i]->visible = false;
+						InvalidateRect(hWnd, NULL, FALSE);
+						currentStage->timerOn = true;
+					}
+				}
+			}
+			keyEscDown = true;
+			break;
+		}
 		default:
 			break;
 	}
@@ -357,6 +402,9 @@ void KeyUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			break;
 		case VK_SPACE:
 			keySpaceDown = false;
+			break;
+		case VK_ESCAPE:
+			keyEscDown = false;
 			break;
 		default:
 			break;
@@ -418,8 +466,8 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						button->img = bmp_PauseButton;
 						for (int j = 0; j < buttons.size(); j++)
 						{
-							if ((buttons[j]->buttonID % 100 == BUTTON_MENU)
-								|| (buttons[j]->buttonID % 100 == BUTTON_RETRY))
+							if ((buttons[j]->buttonID == 100 * 1000 + BUTTON_MENU)
+								|| (buttons[j]->buttonID == 100 * 1000 + BUTTON_RETRY))
 								buttons[j]->visible = false;
 						}
 						break;
@@ -435,8 +483,8 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						button->img = bmp_ContinueButton;
 						for (int j = 0; j < buttons.size(); j++)
 						{
-							if ((buttons[j]->buttonID % 100 == BUTTON_MENU)
-								|| (buttons[j]->buttonID % 100 == BUTTON_RETRY))
+							if ((buttons[j]->buttonID == 100 * 1000 + BUTTON_MENU)
+								|| (buttons[j]->buttonID == 100 * 1000 + BUTTON_RETRY))
 								buttons[j]->visible = true;
 						}
 						InvalidateRect(hWnd, NULL, FALSE);
@@ -1370,6 +1418,8 @@ void InitStage(HWND hWnd, int stageID)
 			theHero = CreateHero(bmp_Hero, 0, 400);
 			break;
 		case STAGE_STARTSTORY:
+			break;
+		case STAGE_ENDSTORY:
 			break;
 		case STAGE_3:
 			theHero = CreateHero(bmp_Hero, 0, 13*BLOCK_SIZE_Y);
