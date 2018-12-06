@@ -126,5 +126,14 @@
     <Image Include="res\gamebg5.bmp">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\endbg.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\endbg2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\buttonnext.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

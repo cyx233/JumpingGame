@@ -47,6 +47,7 @@
 #define STAGE_HELP_4			11		//水晶控制元素，末影之眼控制传送
 
 #define STAGE_ENDSTORY			12		//结局故事
+#define STAGE_ENDSTORY2			13
 
 
 
@@ -94,7 +95,7 @@
 #define BUTTON_LABEL				7	//标签ID
 #define BUTTON_SELECT				8	//选关ID
 #define BUTTON_PAUSE				9	//暂停ID
-
+#define BUTTON_NEXT					10	//下一场景ID
 
 #define TIMER_GAMETIMER				1	//游戏的默认计时器ID
 #define TIMER_GAMETIMER_ELAPSE		10	//默认计时器刷新间隔的毫秒数

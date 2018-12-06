@@ -25,6 +25,8 @@ HBITMAP bmp_GameBg2;
 HBITMAP bmp_GameBg3;
 HBITMAP bmp_GameBg4;
 HBITMAP bmp_GameBg5;
+HBITMAP bmp_EndBg;
+HBITMAP bmp_EndBg2;
 
 HBITMAP bmp_StartButton;	//开始按钮图像
 HBITMAP bmp_HelpButton;		//帮助按钮图像
@@ -34,6 +36,7 @@ HBITMAP bmp_ContinueButton; //继续按钮图像
 HBITMAP bmp_RetryButton;	//重生按钮图像
 HBITMAP bmp_SelectButton;	//选关按钮图像
 HBITMAP bmp_PauseButton;	//继续按钮图像
+HBITMAP bmp_NextButton;	//继续按钮图像
 
 HBITMAP bmp_Name;			//姓名栏图像
 
@@ -62,6 +65,7 @@ vector<Button*> buttons; //按钮
 Name*theName;			//姓名栏
 vector<Block*>blocks; //方块         
 vector<int>namelist;//名单
+int lucky;//最后的人
 bool nameflag = true;
 
 
@@ -251,12 +255,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	//加载图像资源
+	bmp_Title = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_TITLE));
 	bmp_Background = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BG));
 	bmp_GameBg = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG));
 	bmp_GameBg2 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG2));
 	bmp_GameBg3 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG3));
 	bmp_GameBg4 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG4));
 	bmp_GameBg5 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG5));
+	bmp_EndBg = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_ENDBG));
+	bmp_EndBg2 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_ENDBG2));
+
 
 	bmp_Name = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_NAME));
 
@@ -285,7 +293,7 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_RetryButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_RETRY));
 	bmp_PauseButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PAUSE));
 	bmp_ContinueButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_CONTINUE));
-	bmp_Title = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_TITLE));
+	bmp_NextButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_NEXT));
 
 	//添加按钮
 
@@ -305,6 +313,9 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	Button* title = CreateButton(BUTTON_LABEL, bmp_Title, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
 	buttons.push_back(title);
+
+	Button* nextbutton = CreateButton(STAGE_ENDSTORY * 1000 + BUTTON_NEXT, bmp_NextButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1250 - BLOCK_SIZE_X-10, 700 - BLOCK_SIZE_Y-10);
+	buttons.push_back(nextbutton);
 
 
 	//初始化姓名栏
@@ -450,7 +461,7 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				switch (button->buttonID % 100) {
 					case BUTTON_STARTGAME:
 					{
-						InitStage(hWnd, STAGE_5);
+						InitStage(hWnd, STAGE_ENDSTORY);
 						break;
 					}
 					case BUTTON_HELP:
@@ -1435,6 +1446,8 @@ void InitStage(HWND hWnd, int stageID)
 			break;
 		case STAGE_ENDSTORY:
 			break;
+		case STAGE_ENDSTORY2:
+			break;
 		case STAGE_3:
 			theHero = CreateHero(bmp_Hero, 0, 13*BLOCK_SIZE_Y);
 			break;
@@ -1520,10 +1533,13 @@ void TrapDetect(HWND hWnd)
 						{
 							switch (currentStage->stageID)
 							{
-								case 7:
+								case STAGE_5:
+								{
 									InitStage(hWnd, STAGE_ENDSTORY);
+									lucky = theName->frame;
 									break;
-								case 11:
+								}
+								case STAGE_HELP_4:
 									InitStage(hWnd, STAGE_STARTSTORY);
 									break;
 								default:
@@ -2373,7 +2389,6 @@ void Paint(HWND hWnd)
 		}
 
 	// 绘制按钮到缓存
-	if (currentStage->stageID != STAGE_ENDSTORY)
 	for (int i = 0; i < buttons.size(); i++)
 	{
 		Button* button = buttons[i];
@@ -2423,6 +2438,9 @@ void Paint(HWND hWnd)
 			Sleep(500);
 			for (int i = 0; i < namelist.size(); i++)
 			{
+				if (i > 0 && i < namelist.size() - 1)
+					if (namelist[i] == namelist[i - 1])
+						continue;
 				nameframe = namelist[i];
 				SelectObject(hdc_loadBmp, theName->img);
 				TransparentBlt(
@@ -2445,6 +2463,9 @@ void Paint(HWND hWnd)
 		{
 			for (int i = 0; i < namelist.size(); i++)
 			{
+				if (i > 0 && i < namelist.size() - 1)
+					if (namelist[i] == namelist[i - 1])
+						continue;
 				nameframe = namelist[i];
 				SelectObject(hdc_loadBmp, theName->img);
 				TransparentBlt(
@@ -2460,6 +2481,16 @@ void Paint(HWND hWnd)
 				}
 			}
 		}
+	}
+
+	if (currentStage->stageID == STAGE_ENDSTORY2)
+	{
+		SelectObject(hdc_loadBmp, theName->img);
+		TransparentBlt(
+			hdc_memBuffer, 648 - (NAME_WIDTH / 2) * 5, 700 - NAME_HEIGHT,
+			5 * NAME_WIDTH, 5 * NAME_HEIGHT,
+			hdc_loadBmp, 0, NAME_HEIGHT*lucky, NAME_WIDTH, NAME_HEIGHT,
+			RGB(255, 255, 255));
 	}
 
 

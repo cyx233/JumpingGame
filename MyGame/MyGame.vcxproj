@@ -162,8 +162,11 @@
     <Image Include="res\buttonback.bmp" />
     <Image Include="res\buttoncontinue.bmp" />
     <Image Include="res\buttonmenu.bmp" />
+    <Image Include="res\buttonnext.bmp" />
     <Image Include="res\buttonpause.bmp" />
     <Image Include="res\buttonretry.bmp" />
+    <Image Include="res\endbg.bmp" />
+    <Image Include="res\endbg2.bmp" />
     <Image Include="res\gamebg.bmp" />
     <Image Include="res\gamebg2.bmp" />
     <Image Include="res\gamebg3.bmp" />
