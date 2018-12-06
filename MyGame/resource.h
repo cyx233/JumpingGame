@@ -36,15 +36,27 @@
 #define IDB_BITMAP_GAMEBG5              206
 #define IDB_BITMAP_ENDBG2               208
 #define IDB_BITMAP_ENDBG                209
-#define IDB_BITMAP1                     210
 #define IDB_BITMAP_NEXT                 210
+#define IDB_BITMAP_ENDBG3               211
+#define IDB_BITMAP_STARTBG              212
+#define IDB_BITMAP_SELECT               213
+#define IDB_BITMAP_STAGE1               214
+#define IDB_BITMAP_STAGE2               215
+#define IDB_BITMAP_STAGE3               216
+#define IDB_BITMAP_STAGE4               217
+#define IDB_BITMAP_STAGE5               218
+#define IDB_BITMAP_HELP1                219
+#define IDB_BITMAP_HELP2                220
+#define IDB_BITMAP_HELP3                221
+#define IDB_BITMAP4                     222
+#define IDB_BITMAP_HELP4                222
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        211
+#define _APS_NEXT_RESOURCE_VALUE        223
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           110

@@ -32,9 +32,8 @@
 
 
 #define STAGE_STARTMENU			0		//开始画面的ID
-#define STAGE_SELECT			1		//选关界面ID
-#define STAGE_STARTSTORY		2		//开始故事界面
-
+#define STAGE_STARTSTORY		1		//开始故事界面
+#define STAGE_SELECT			2		//选关界面ID
 #define STAGE_1					3		//第一个游戏场景的ID  黄铁矿之苹果
 #define STAGE_2					4		//锌铁铜之苹果
 #define STAGE_3					5		//只是黄色的普通苹果
@@ -47,8 +46,8 @@
 #define STAGE_HELP_4			11		//水晶控制元素，末影之眼控制传送
 
 #define STAGE_ENDSTORY			12		//结局故事
-#define STAGE_ENDSTORY2			13
-
+#define STAGE_ENDSTORY2			13	
+#define STAGE_ENDSTORY3			14
 
 
 
@@ -88,6 +87,8 @@
 #define BUTTON_HELP					2	//游戏帮助按钮ID
 #define BUTTON_STARTGAME_WIDTH		147	//开始游戏按钮宽度
 #define BUTTON_STARTGAME_HEIGHT		60	//开始游戏按钮高度
+#define BUTTON_LABEL_WIDTH			200	//选关标签宽度
+#define BUTTON_LABEL_HEIGHT			81	//选关标签高度
 #define BUTTON_MENU					3	//菜单按钮ID
 #define BUTTON_BACK					4	//返回按钮ID
 #define BUTTON_CONTINUE				5	//继续按钮ID

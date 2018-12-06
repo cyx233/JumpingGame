@@ -135,5 +135,41 @@
     <Image Include="res\buttonnext.bmp">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\endbg3.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\startstory.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\select.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\ButtonStage1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\ButtonStage2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\ButtonStage3.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\ButtonStage4.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\ButtonStage5.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\bghelp1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\bghelp2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\bghelp3.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\bghelp4.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

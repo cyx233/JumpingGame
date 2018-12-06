@@ -158,6 +158,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\apple.bmp" />
+    <Image Include="res\bghelp1.bmp" />
+    <Image Include="res\bghelp2.bmp" />
+    <Image Include="res\bghelp3.bmp" />
+    <Image Include="res\bghelp4.bmp" />
     <Image Include="res\bitmap2.bmp" />
     <Image Include="res\buttonback.bmp" />
     <Image Include="res\buttoncontinue.bmp" />
@@ -165,8 +169,14 @@
     <Image Include="res\buttonnext.bmp" />
     <Image Include="res\buttonpause.bmp" />
     <Image Include="res\buttonretry.bmp" />
+    <Image Include="res\ButtonStage1.bmp" />
+    <Image Include="res\ButtonStage2.bmp" />
+    <Image Include="res\ButtonStage3.bmp" />
+    <Image Include="res\ButtonStage4.bmp" />
+    <Image Include="res\ButtonStage5.bmp" />
     <Image Include="res\endbg.bmp" />
     <Image Include="res\endbg2.bmp" />
+    <Image Include="res\endbg3.bmp" />
     <Image Include="res\gamebg.bmp" />
     <Image Include="res\gamebg2.bmp" />
     <Image Include="res\gamebg3.bmp" />
@@ -187,8 +197,10 @@
     <Image Include="res\grass.bmp" />
     <Image Include="res\ice.bmp" />
     <Image Include="res\icon.ico" />
+    <Image Include="res\select.bmp" />
     <Image Include="res\slime.bmp" />
     <Image Include="res\start.bmp" />
+    <Image Include="res\startstory.bmp" />
     <Image Include="res\thorn.bmp" />
     <Image Include="res\title.bmp" />
   </ItemGroup>
