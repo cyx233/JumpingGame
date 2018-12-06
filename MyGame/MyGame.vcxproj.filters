@@ -108,5 +108,23 @@
     <Image Include="res\onoff.bmp">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\gamebg.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\gamebg2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\bitmap2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\gamebg3.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\gamebg4.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\gamebg5.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

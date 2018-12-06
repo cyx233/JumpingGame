@@ -20,6 +20,11 @@ WCHAR szWindowClass[MAX_LOADSTRING]; // 主窗口类名
 
 HBITMAP bmp_Background; //背景图像
 HBITMAP bmp_Title;		//标题背景
+HBITMAP bmp_GameBg;		//游戏背景
+HBITMAP bmp_GameBg2;
+HBITMAP bmp_GameBg3;
+HBITMAP bmp_GameBg4;
+HBITMAP bmp_GameBg5;
 
 HBITMAP bmp_StartButton;	//开始按钮图像
 HBITMAP bmp_HelpButton;		//帮助按钮图像
@@ -56,7 +61,8 @@ Hero* theHero = NULL; //主角状态
 vector<Button*> buttons; //按钮
 Name*theName;			//姓名栏
 vector<Block*>blocks; //方块         
-vector<int>namelist;
+vector<int>namelist;//名单
+bool nameflag = true;
 
 
 int mouseX = 0; //鼠标横坐标
@@ -246,6 +252,11 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	//加载图像资源
 	bmp_Background = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BG));
+	bmp_GameBg = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG));
+	bmp_GameBg2 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG2));
+	bmp_GameBg3 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG3));
+	bmp_GameBg4 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG4));
+	bmp_GameBg5 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_GAMEBG5));
 
 	bmp_Name = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_NAME));
 
@@ -701,7 +712,7 @@ void InitMap(HWND hWnd, int stageID)
 				{
 					if (i == 36 && j == 5)
 						continue;
-					else
+					else if(i>30)
 					{
 						normal = CreateBlock(STAGE_1 * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
 						blocks.push_back(normal);
@@ -769,7 +780,7 @@ void InitMap(HWND hWnd, int stageID)
 				blocks.push_back(fire);
 			}
 
-			for (int i = 6; i <= 11; i++)
+			for (int i = 0; i <= 11; i++)
 			{
 				fire = CreateBlock(STAGE_1 * 1000 + BLOCK_FIRE + 100, bmp_BlockFire, BLOCK_SIZE_X, BLOCK_SIZE_Y, 19 * BLOCK_SIZE_X, i * BLOCK_SIZE_Y);
 				fire->link = 1;
@@ -787,13 +798,6 @@ void InitMap(HWND hWnd, int stageID)
 
 		case STAGE_2:
 		{
-			for (int i = 0; i < 40; i++)
-				for (int j = 0; j <= 3; j++)
-				{
-					normal = CreateBlock(stageID * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
-					blocks.push_back(normal);
-				}
-
 			for (int i = 0; i < 40; i++)
 			{
 				if (i <= 9)
@@ -920,13 +924,6 @@ void InitMap(HWND hWnd, int stageID)
 
 		case STAGE_3:
 		{
-			for (int i = 0; i < 40; i++)
-				for (int j = 0; j <= 3; j++)
-				{
-					normal = CreateBlock(stageID * 1000 + BLOCK_NORMAL, bmp_BlockDirt, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, j * BLOCK_SIZE_Y);
-					blocks.push_back(normal);
-				}
-
 			for (int i = 0; i < 40; i++)
 			{
 				for (int j = 15; j < 24; j++)
@@ -1197,10 +1194,7 @@ void InitMap(HWND hWnd, int stageID)
 			savepoint = CreateBlock(STAGE_5 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 * BLOCK_SIZE_X, 19 * BLOCK_SIZE_Y);
 			blocks.push_back(savepoint);
 			CurrentSave = savepoint;
-
-			savepoint = CreateBlock(STAGE_5 * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0 * BLOCK_SIZE_X, 13 * BLOCK_SIZE_Y);
-			blocks.push_back(savepoint);
-			CurrentSave = savepoint;
+			break;
 		}
 
 		case STAGE_HELP_1:
@@ -1381,6 +1375,11 @@ void InitStage(HWND hWnd, int stageID)
 	currentStage = new Stage();
 	currentStage->stageID = stageID;
 
+	if (currentStage->stageID == STAGE_STARTMENU)
+	{
+		nameflag = true;
+		vector<int>().swap(namelist);
+	}
 	//初始化计时器
 	currentStage->timeCountDown = 10000;
 	currentStage->timerOn = true;
@@ -1390,7 +1389,22 @@ void InitStage(HWND hWnd, int stageID)
 	switch (stageID)
 	{
 		case STAGE_1:
-			currentStage->bg = bmp_Background;
+			currentStage->bg = bmp_GameBg;
+			break;
+		case STAGE_2:
+			currentStage->bg = bmp_GameBg2;
+			break;
+		case STAGE_3:
+			currentStage->bg = bmp_GameBg3;
+			break;
+		case STAGE_4:
+			currentStage->bg = bmp_GameBg4;
+			break;
+		case STAGE_5:
+			currentStage->bg = bmp_GameBg5;
+			break;
+		case STAGE_ENDSTORY:
+			currentStage->bg = bmp_EndBg;
 			break;
 		default:
 			currentStage->bg = bmp_Background;
@@ -1478,6 +1492,7 @@ void TrapDetect(HWND hWnd)
 						theHero = NULL;
 						return;
 					}
+
 					case BLOCK_FIRE://火焰方块判定
 					{
 						body = CreateBlock(1000 * currentStage->stageID + BLOCK_BURNEDBODY, bmp_BurnedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
@@ -1487,6 +1502,7 @@ void TrapDetect(HWND hWnd)
 						theHero = NULL;
 						return;
 					}
+
 					case BLOCK_ICE://冰焰方块判定
 					{
 						body = CreateBlock(1000 * currentStage->stageID + BLOCK_FREEZE, bmp_FreezedBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
@@ -1644,10 +1660,14 @@ void UpdateHero(HWND hWnd)
 		TrapDetect(hWnd);
 
 	 //主角重生
-	if ((theHero == NULL) && keySpaceDown)
-		theHero = CreateHero(bmp_Hero, CurrentSave->x, CurrentSave->y);
-	if ((theHero == NULL) && (currentStage->stageID == STAGE_STARTMENU))
-		theHero = CreateHero(bmp_Hero, CurrentSave->x, CurrentSave->y);
+	if (currentStage->stageID != STAGE_ENDSTORY &&
+		currentStage->stageID != STAGE_STARTSTORY)
+	{
+		if ((theHero == NULL) && (currentStage->stageID == STAGE_STARTMENU))
+			theHero = CreateHero(bmp_Hero, CurrentSave->x, CurrentSave->y);
+		if ((theHero == NULL) && keySpaceDown)
+			theHero = CreateHero(bmp_Hero, CurrentSave->x, CurrentSave->y);
+	}
 
 	if (theHero != NULL) {
 
@@ -2339,7 +2359,8 @@ void Paint(HWND hWnd)
 		{
 			case STAGE_STARTSTORY:
 				break;
-
+			case STAGE_ENDSTORY:
+				break;
 			default:
 				SelectObject(hdc_loadBmp, theHero->img);
 				TransparentBlt(
@@ -2352,6 +2373,7 @@ void Paint(HWND hWnd)
 		}
 
 	// 绘制按钮到缓存
+	if (currentStage->stageID != STAGE_ENDSTORY)
 	for (int i = 0; i < buttons.size(); i++)
 	{
 		Button* button = buttons[i];
@@ -2371,9 +2393,8 @@ void Paint(HWND hWnd)
 	if (theName->visible = true)
 		switch (currentStage->stageID)
 		{
-			case STAGE_STARTSTORY:
+			case STAGE_ENDSTORY:
 				break;
-			
 			default:
 			{
 				SelectObject(hdc_loadBmp, bmp_Background);
@@ -2392,6 +2413,54 @@ void Paint(HWND hWnd)
 
 			}
 		}
+		
+	int namex = 0, namey = 0, nameframe = 0;
+	if (currentStage->stageID == STAGE_ENDSTORY)
+	{
+		if (nameflag) 
+		{
+			BitBlt(hdc_window, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hdc_memBuffer, 0, 0, SRCCOPY);
+			Sleep(500);
+			for (int i = 0; i < namelist.size(); i++)
+			{
+				nameframe = namelist[i];
+				SelectObject(hdc_loadBmp, theName->img);
+				TransparentBlt(
+					hdc_memBuffer, NAME_WIDTH*namex, 90+NAME_HEIGHT*namey,
+					NAME_WIDTH, NAME_HEIGHT,
+					hdc_loadBmp, 0, NAME_HEIGHT*nameframe, NAME_WIDTH, NAME_HEIGHT,
+					RGB(255, 255, 255));
+				namey++;
+				if (namey == 25)
+				{
+					namex++;
+					namey = 0;
+				}
+				BitBlt(hdc_window, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hdc_memBuffer, 0, 0, SRCCOPY);
+				Sleep(100);
+			}
+			nameflag = false;
+		}
+		else
+		{
+			for (int i = 0; i < namelist.size(); i++)
+			{
+				nameframe = namelist[i];
+				SelectObject(hdc_loadBmp, theName->img);
+				TransparentBlt(
+					hdc_memBuffer, NAME_WIDTH*namex, 90 + NAME_HEIGHT*namey,
+					NAME_WIDTH, NAME_HEIGHT,
+					hdc_loadBmp, 0, NAME_HEIGHT*nameframe, NAME_WIDTH, NAME_HEIGHT,
+					RGB(255, 255, 255));
+				namey++;
+				if (namey == 25)
+				{
+					namex++;
+					namey = 0;
+				}
+			}
+		}
+	}
 
 
 	// 最后将所有的信息绘制到屏幕上

@@ -158,11 +158,17 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\apple.bmp" />
+    <Image Include="res\bitmap2.bmp" />
     <Image Include="res\buttonback.bmp" />
     <Image Include="res\buttoncontinue.bmp" />
     <Image Include="res\buttonmenu.bmp" />
     <Image Include="res\buttonpause.bmp" />
     <Image Include="res\buttonretry.bmp" />
+    <Image Include="res\gamebg.bmp" />
+    <Image Include="res\gamebg2.bmp" />
+    <Image Include="res\gamebg3.bmp" />
+    <Image Include="res\gamebg4.bmp" />
+    <Image Include="res\gamebg5.bmp" />
     <Image Include="res\name.bmp" />
     <Image Include="res\onoff.bmp" />
     <Image Include="res\pedal.bmp" />
