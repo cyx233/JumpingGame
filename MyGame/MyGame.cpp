@@ -319,8 +319,10 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_HELP_STAGE2 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_HELP2));
 	bmp_HELP_STAGE3 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_HELP3));
 	bmp_HELP_STAGE4 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_HELP4));
-	//添加按钮
 
+
+
+	//添加按钮
 	Button* startButton = CreateButton(BUTTON_STARTGAME, bmp_StartButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 567, 400);
 	buttons.push_back(startButton);
 	Button* helpButton = CreateButton(BUTTON_HELP, bmp_HelpButton, BUTTON_STARTGAME_WIDTH, BUTTON_STARTGAME_HEIGHT, 567, 500);
@@ -1246,7 +1248,7 @@ void InitMap(HWND hWnd, int stageID)
 
 				}
 
-				if (i > 8 && i < 14 && i != 11)
+				if (i > 8 && i < 14)
 				{
 					normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, i*BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
 					blocks.push_back(normal);
@@ -1291,9 +1293,15 @@ void InitMap(HWND hWnd, int stageID)
 			thorn->m = 14 * BLOCK_SIZE_X; thorn->n = 25 * BLOCK_SIZE_X; thorn->vx = 2.0; thorn->link = 1;
 			blocks.push_back(thorn);
 
-			onoff = CreateBlock(STAGE_5 * 1000 + BLOCK_ONOFF, bmp_BlockOnoff, BLOCK_SIZE_X, BLOCK_SIZE_Y, 11 * BLOCK_SIZE_X, 12 * BLOCK_SIZE_Y);
+			normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, 9*BLOCK_SIZE_X, 9 * BLOCK_SIZE_Y);
+			blocks.push_back(normal);
+
+			onoff = CreateBlock(STAGE_5 * 1000 + BLOCK_ONOFF, bmp_BlockOnoff, BLOCK_SIZE_X, BLOCK_SIZE_Y, 10 * BLOCK_SIZE_X, 9 * BLOCK_SIZE_Y);
 			onoff->link = 1;
 			blocks.push_back(onoff);
+
+			normal = CreateBlock(STAGE_5 * 1000 + BLOCK_NORMAL, bmp_BlockGrass, BLOCK_SIZE_X, BLOCK_SIZE_Y, 11*BLOCK_SIZE_X, 9 * BLOCK_SIZE_Y);
+			blocks.push_back(normal);
 
 			apple = CreateBlock(STAGE_5 * 1000 + BLOCK_APPLE, bmp_BlockApple, BLOCK_SIZE_X, BLOCK_SIZE_Y, 35 * BLOCK_SIZE_X, 11 * BLOCK_SIZE_Y);
 			blocks.push_back(apple);
