@@ -49,7 +49,7 @@ HBITMAP bmp_HELP_STAGE1;
 HBITMAP bmp_HELP_STAGE2;
 HBITMAP bmp_HELP_STAGE3;
 HBITMAP bmp_HELP_STAGE4;
-
+HBITMAP bmp_TitleBg;
 
 HBITMAP bmp_Name;			//姓名栏图像
 
@@ -280,6 +280,7 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_EndBg3 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_ENDBG3));
 	bmp_StartBg = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_STARTBG));
 	bmp_Select = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SELECT));
+	bmp_TitleBg = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_TITLEBG));
 
 	bmp_Name = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_NAME));
 
@@ -335,7 +336,7 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	buttons.push_back(retryButton);
 	Button* backButton = CreateButton(100 * 1000 + BUTTON_BACK, bmp_BackButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1232, BLOCK_SIZE_Y * 3 + 15);
 	buttons.push_back(backButton);
-	backButton = CreateButton(STAGE_SELECT * 1000 + BUTTON_BACK, bmp_BackButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20 * BLOCK_SIZE_X, BLOCK_SIZE_Y * 19);
+	backButton = CreateButton(STAGE_SELECT * 1000 + BUTTON_BACK, bmp_BackButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20 * BLOCK_SIZE_X - BLOCK_SIZE_X, BLOCK_SIZE_Y * 20);
 	buttons.push_back(backButton);
 
 
@@ -354,15 +355,15 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	menuButton = CreateButton(STAGE_ENDSTORY * 1000 + BUTTON_MENU, bmp_MenuButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1250 - BLOCK_SIZE_X - 10, 700 - BLOCK_SIZE_Y - 10);
 	buttons.push_back(menuButton);
 
-	Button* label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE1, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 648 - BUTTON_LABEL_WIDTH / 2, BUTTON_LABEL_HEIGHT);
+	Button* label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE1, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 100, (BUTTON_LABEL_HEIGHT + 20));
 	buttons.push_back(label);
-	label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE2, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 648 - BUTTON_LABEL_WIDTH / 2, 2 * BUTTON_LABEL_HEIGHT);
+	label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE2, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 100, 2 * (BUTTON_LABEL_HEIGHT + 20));
 	buttons.push_back(label);
-	label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE3, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 648 - BUTTON_LABEL_WIDTH / 2, 3 * BUTTON_LABEL_HEIGHT);
+	label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE3, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 100, 3 * (BUTTON_LABEL_HEIGHT + 20));
 	buttons.push_back(label);
-	label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE4, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 648 - BUTTON_LABEL_WIDTH / 2, 4 * BUTTON_LABEL_HEIGHT);
+	label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE4, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 100, 4 * (BUTTON_LABEL_HEIGHT + 20));
 	buttons.push_back(label);
-	label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE5, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 648 - BUTTON_LABEL_WIDTH / 2, 5 * BUTTON_LABEL_HEIGHT);
+	label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE5, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 100, 5 * (BUTTON_LABEL_HEIGHT + 20));
 	buttons.push_back(label);
 
 
@@ -802,8 +803,6 @@ void InitMap(HWND hWnd, int stageID)
 				blocks.push_back(thorn);
 
 				savepoint = CreateBlock(STAGE_STARTMENU * 1000 + BLOCK_SAVE, bmp_BlockSave, BLOCK_SIZE_X, BLOCK_SIZE_Y, 0, 530);
-				blocks.push_back(savepoint);
-
 				CurrentSave = savepoint;
 			}
 			break;
@@ -1506,6 +1505,9 @@ void InitStage(HWND hWnd, int stageID)
 	//初始化背景
 	switch (stageID)
 	{
+		case STAGE_STARTMENU:
+			currentStage->bg = bmp_TitleBg;
+			break;
 		case STAGE_STARTSTORY:
 			currentStage->bg = bmp_StartBg;
 			break;
@@ -2586,7 +2588,7 @@ void Paint(HWND hWnd)
 			for (int i = 0; i < namelist.size(); i++)
 			{
 				if (i > 0)
-					if (namelist[i] == namelist[i - 1])
+					if (namelist[i] == namelist[i - 1] || namelist[i] == lucky)
 						continue;
 				if (namex > 5)
 					continue;
@@ -2613,7 +2615,7 @@ void Paint(HWND hWnd)
 			for (int i = 0; i < namelist.size(); i++)
 			{
 				if (i > 0 && i)
-					if (namelist[i] == namelist[i - 1])
+					if (namelist[i] == namelist[i - 1] || namelist[i] == lucky)
 						continue;
 				if (namex > 5)
 					continue;

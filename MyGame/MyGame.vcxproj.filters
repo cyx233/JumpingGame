@@ -171,5 +171,8 @@
     <Image Include="res\bghelp4.bmp">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\titlebg.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

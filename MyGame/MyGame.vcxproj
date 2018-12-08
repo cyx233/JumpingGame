@@ -203,6 +203,7 @@
     <Image Include="res\startstory.bmp" />
     <Image Include="res\thorn.bmp" />
     <Image Include="res\title.bmp" />
+    <Image Include="res\titlebg.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
