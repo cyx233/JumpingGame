@@ -33,145 +33,151 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\icon.ico">
+    <Image Include="res\images\apple.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bg.bmp">
+    <Image Include="res\images\bg.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bloodbody.bmp">
+    <Image Include="res\images\bghelp1.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\dirt.bmp">
+    <Image Include="res\images\bghelp2.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\freezed.bmp">
+    <Image Include="res\images\bghelp3.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\slime.bmp">
+    <Image Include="res\images\bghelp4.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\start.bmp">
+    <Image Include="res\images\bitmap2.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\thorn.bmp">
+    <Image Include="res\images\bloodbody.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\burned.bmp">
+    <Image Include="res\images\burned.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\fire.bmp">
+    <Image Include="res\images\buttonback.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\grass.bmp">
+    <Image Include="res\images\buttoncontinue.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\ice.bmp">
+    <Image Include="res\images\buttonmenu.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\help.bmp">
+    <Image Include="res\images\buttonnext.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\save.bmp">
+    <Image Include="res\images\buttonpause.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\buttonback.bmp">
+    <Image Include="res\images\buttonretry.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\buttonmenu.bmp">
+    <Image Include="res\images\ButtonStage1.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\buttonpause.bmp">
+    <Image Include="res\images\ButtonStage2.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\buttonretry.bmp">
+    <Image Include="res\images\ButtonStage3.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\pedal.bmp">
+    <Image Include="res\images\ButtonStage4.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\pedalon.bmp">
+    <Image Include="res\images\ButtonStage5.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\apple.bmp">
+    <Image Include="res\images\dirt.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\buttoncontinue.bmp">
+    <Image Include="res\images\endbg.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\name.bmp">
+    <Image Include="res\images\endbg2.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\title.bmp">
+    <Image Include="res\images\endbg3.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\onoff.bmp">
+    <Image Include="res\images\fire.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\gamebg.bmp">
+    <Image Include="res\images\freezed.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\gamebg2.bmp">
+    <Image Include="res\images\gamebg.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bitmap2.bmp">
+    <Image Include="res\images\gamebg2.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\gamebg3.bmp">
+    <Image Include="res\images\gamebg3.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\gamebg4.bmp">
+    <Image Include="res\images\gamebg4.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\gamebg5.bmp">
+    <Image Include="res\images\gamebg5.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\endbg.bmp">
+    <Image Include="res\images\grass.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\endbg2.bmp">
+    <Image Include="res\images\help.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\buttonnext.bmp">
+    <Image Include="res\images\ice.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\endbg3.bmp">
+    <Image Include="res\images\icon.ico">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\startstory.bmp">
+    <Image Include="res\images\name.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\select.bmp">
+    <Image Include="res\images\onoff.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\ButtonStage1.bmp">
+    <Image Include="res\images\pedal.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\ButtonStage2.bmp">
+    <Image Include="res\images\pedalon.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\ButtonStage3.bmp">
+    <Image Include="res\images\save.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\ButtonStage4.bmp">
+    <Image Include="res\images\select.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\ButtonStage5.bmp">
+    <Image Include="res\images\slime.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bghelp1.bmp">
+    <Image Include="res\images\start.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bghelp2.bmp">
+    <Image Include="res\images\startstory.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bghelp3.bmp">
+    <Image Include="res\images\thorn.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\bghelp4.bmp">
+    <Image Include="res\images\title.bmp">
       <Filter>资源文件</Filter>
     </Image>
-    <Image Include="res\titlebg.bmp">
+    <Image Include="res\images\titlebg.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\images\buttonsound.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\images\buttonsilent.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

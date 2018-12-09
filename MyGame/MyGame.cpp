@@ -40,6 +40,10 @@ HBITMAP bmp_RetryButton;	//重生按钮图像
 HBITMAP bmp_SelectButton;	//选关按钮图像
 HBITMAP bmp_PauseButton;	//继续按钮图像
 HBITMAP bmp_NextButton;	//继续按钮图像
+HBITMAP bmp_SoundButton;//bgm按钮
+HBITMAP bmp_SilentButton;//静音
+
+
 HBITMAP bmp_STAGE1;
 HBITMAP bmp_STAGE2;
 HBITMAP bmp_STAGE3;
@@ -79,7 +83,9 @@ Name*theName;			//姓名栏
 vector<Block*>blocks; //方块         
 vector<int>namelist;//名单
 int lucky;//最后的人
-bool nameflag = true;
+bool nameflag = true;//滚动打印名单
+bool silent;//静音
+bool musicon = false;
 
 
 int mouseX = 0; //鼠标横坐标
@@ -91,6 +97,7 @@ bool keyLeftDown = false; //左键
 bool keyRightDown = false; //右键
 bool keySpaceDown = false; //空格键
 bool keyEscDown = false;//Esc键
+
 
 double const PI = acos(double(-1));
 #pragma endregion
@@ -244,6 +251,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// 定时器事件
 			if (currentStage != NULL && currentStage->timerOn) TimerUpdate(hWnd, wParam, lParam);
 			break;
+		case MM_MCINOTIFY:
+			//音效
+		{
+			if (!silent)
+			{
+				musicon = false;
+				break;
+			}
+
+			if (lParam == 1)
+			{
+				mciSendString(TEXT("play BGM from 0 to 40000 notify"), NULL, 0, hWnd);
+			}
+
+			break;
+		}
 		case WM_PAINT:
 			// 绘图
 			Paint(hWnd);
@@ -267,6 +290,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	//加载声音资源
+	mciSendString(
+		TEXT("open \"res\\sounds\\bgm.wav\" type waveaudio alias BGM"),
+		NULL, 0, NULL);
+	mciSendString(TEXT("play BGM from 0 to 40000 notify"), NULL, 0, hWnd);
+	musicon = true;
+
 	//加载图像资源
 	bmp_Title = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_TITLE));
 	bmp_Background = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_BG));
@@ -310,6 +340,9 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	bmp_PauseButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_PAUSE));
 	bmp_ContinueButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_CONTINUE));
 	bmp_NextButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_NEXT));
+	bmp_SoundButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SOUND));
+	bmp_SilentButton = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_SILENT));
+
 	bmp_STAGE1 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_STAGE1));
 	bmp_STAGE2 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_STAGE2));
 	bmp_STAGE3 = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_STAGE3));
@@ -334,13 +367,19 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 	Button* menuButton = CreateButton(100 * 1000 + BUTTON_MENU, bmp_MenuButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1232, BLOCK_SIZE_Y + 5);
 	buttons.push_back(menuButton);
+	menuButton = CreateButton(STAGE_ENDSTORY * 1000 + BUTTON_MENU, bmp_MenuButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1250 - BLOCK_SIZE_X - 10, 700 - BLOCK_SIZE_Y - 10);
+	buttons.push_back(menuButton);
+
 	Button* retryButton = CreateButton(100 * 1000 + BUTTON_RETRY, bmp_RetryButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1232, BLOCK_SIZE_Y * 2 + 10);
 	buttons.push_back(retryButton);
+
 	Button* backButton = CreateButton(100 * 1000 + BUTTON_BACK, bmp_BackButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1232, BLOCK_SIZE_Y * 3 + 15);
 	buttons.push_back(backButton);
 	backButton = CreateButton(STAGE_SELECT * 1000 + BUTTON_BACK, bmp_BackButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 20 * BLOCK_SIZE_X - BLOCK_SIZE_X, BLOCK_SIZE_Y * 20);
 	buttons.push_back(backButton);
 
+	Button* soundButton = CreateButton(100 * 1000 + BUTTON_SOUND, bmp_SoundButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1222 - BLOCK_SIZE_X, 0);
+	buttons.push_back(soundButton);
 
 	Button* title = CreateButton(BUTTON_LABEL, bmp_Title, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
 	buttons.push_back(title);
@@ -354,8 +393,9 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	nextbutton = CreateButton(STAGE_STARTSTORY * 1000 + BUTTON_NEXT, bmp_NextButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1250 - BLOCK_SIZE_X - 10, 700 - BLOCK_SIZE_Y - 10);
 	buttons.push_back(nextbutton);
 
-	menuButton = CreateButton(STAGE_ENDSTORY * 1000 + BUTTON_MENU, bmp_MenuButton, BLOCK_SIZE_X, BLOCK_SIZE_Y, 1250 - BLOCK_SIZE_X - 10, 700 - BLOCK_SIZE_Y - 10);
-	buttons.push_back(menuButton);
+
+
+
 
 	Button* label = CreateButton(STAGE_SELECT * 1000 + BUTTON_LABEL, bmp_STAGE1, BUTTON_LABEL_WIDTH, BUTTON_LABEL_HEIGHT, 100, (BUTTON_LABEL_HEIGHT + 20));
 	buttons.push_back(label);
@@ -514,16 +554,19 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						InitStage(hWnd, STAGE_STARTSTORY);
 						return;
 					}
+
 					case BUTTON_HELP:
 					{
 						InitStage(hWnd, STAGE_HELP_1);
 						return;
 					}
+
 					case BUTTON_MENU:
 					{
 						InitStage(hWnd, STAGE_STARTMENU);
 						return;
 					}
+
 					case BUTTON_BACK:
 					{
 						if (currentStage->stageID >= STAGE_1 &&
@@ -537,6 +580,7 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 							InitStage(hWnd, currentStage->stageID - 1);
 						return;
 					}
+
 					case BUTTON_CONTINUE:
 					{
 						currentStage->timerOn = true;
@@ -551,11 +595,13 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						}
 						return;
 					}
+
 					case BUTTON_RETRY:
 					{
 						InitStage(hWnd, currentStage->stageID);
 						return;
 					}
+
 					case BUTTON_PAUSE:
 					{
 						button->buttonID = button->buttonID - BUTTON_PAUSE + BUTTON_CONTINUE;
@@ -571,6 +617,7 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						currentStage->timerOn = false;
 						return;
 					}
+
 					case BUTTON_NEXT:
 					{
 						switch (currentStage->stageID)
@@ -584,6 +631,27 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						}
 						return;
 					}
+
+					case BUTTON_SILENT:
+					{
+						button->buttonID = button->buttonID + BUTTON_SOUND - BUTTON_SILENT;
+						button->img = bmp_SoundButton;
+						silent = false;
+						mciSendString(TEXT("play BGM from 0 to 40000 notify"), NULL, 0, hWnd);
+						InvalidateRect(hWnd, NULL, FALSE);
+						return;
+					}
+					
+
+					case BUTTON_SOUND:
+					{
+						button->buttonID = button->buttonID - BUTTON_SOUND + BUTTON_SILENT;
+						button->img = bmp_SilentButton;
+						silent = true;
+						InvalidateRect(hWnd, NULL, FALSE);
+						return;
+					}
+
 					case BUTTON_LABEL:
 					{
 						if (button->img == bmp_STAGE1)
@@ -635,7 +703,10 @@ void TimerUpdate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	UpdateHero(hWnd); //刷新主角
 	UpdateSurround(hWnd); //刷新环境
-	
+
+	if (!silent && musicon)//静音
+		mciSendString(TEXT("play BGM from 0 to 0 notify"), NULL, 0, hWnd);
+
 	//刷新显示
 	InvalidateRect(hWnd, NULL, FALSE);
 }
@@ -735,11 +806,15 @@ void InitButton(HWND hWnd, int stageID)
 		{
 			button->visible = false;
 		}
+
 		if (button->buttonID % 100 == BUTTON_CONTINUE)
 		{
 			button->buttonID = button->buttonID - BUTTON_CONTINUE + BUTTON_PAUSE;
 			button->img = bmp_PauseButton;
 		}
+
+		if (button->buttonID == 100 * 1000 + BUTTON_SOUND)
+			button->visible = true;
 	}
 }
 

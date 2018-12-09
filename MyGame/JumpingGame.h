@@ -14,7 +14,8 @@
 // 资源头文件
 #include "resource.h"
 #pragma comment(lib, "Msimg32.lib")
-
+#include <mmsystem.h>
+#pragma comment(lib, "Winmm.lib")
 
 //其他头文件
 #include <vector>
@@ -97,6 +98,10 @@
 #define BUTTON_SELECT				8	//选关ID
 #define BUTTON_PAUSE				9	//暂停ID
 #define BUTTON_NEXT					10	//下一场景ID
+#define BUTTON_SOUND				11	//bgmID
+#define BUTTON_SILENT				12	//静音ID
+
+
 
 #define TIMER_GAMETIMER				1	//游戏的默认计时器ID
 #define TIMER_GAMETIMER_ELAPSE		10	//默认计时器刷新间隔的毫秒数
