@@ -85,7 +85,6 @@ vector<int>namelist;//名单
 int lucky;//最后的人
 bool nameflag = true;//滚动打印名单
 bool silent;//静音
-bool musicon = false;
 
 
 int mouseX = 0; //鼠标横坐标
@@ -254,16 +253,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case MM_MCINOTIFY:
 			//音效
 		{
-			if (!silent)
+			if (silent)
 			{
-				musicon = false;
 				break;
 			}
 
 			if (lParam == 1)
-			{
-				mciSendString(TEXT("play BGM from 0 to 40000 notify"), NULL, 0, hWnd);
-			}
+				mciSendString(TEXT("play BGM from 0 notify"), NULL, 0, hWnd);
+
+			if (lParam == 3)
+				mciSendString(TEXT("play END from 0 notify"), NULL, 0, hWnd);
 
 			break;
 		}
@@ -294,8 +293,37 @@ void InitGame(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	mciSendString(
 		TEXT("open \"res\\sounds\\bgm.wav\" type waveaudio alias BGM"),
 		NULL, 0, NULL);
-	mciSendString(TEXT("play BGM from 0 to 40000 notify"), NULL, 0, hWnd);
-	musicon = true;
+	mciSendString(
+		TEXT("open \"res\\sounds\\finish.wav\" type waveaudio alias FINISH"),
+		NULL, 0, NULL);
+	mciSendString(
+		TEXT("open \"res\\sounds\\end.wav\" type waveaudio alias END"),
+		NULL, 0, NULL);
+	mciSendString(
+		TEXT("open \"res\\sounds\\button.wav\" type waveaudio alias BUTTON"),
+		NULL, 0, NULL);
+	mciSendString(
+		TEXT("open \"res\\sounds\\fire.wav\" type waveaudio alias FIRE"),
+		NULL, 0, NULL);
+	mciSendString(
+		TEXT("open \"res\\sounds\\bleed.wav\" type waveaudio alias BLEED"),
+		NULL, 0, NULL);
+	mciSendString(
+		TEXT("open \"res\\sounds\\ice.wav\" type waveaudio alias ICE"),
+		NULL, 0, NULL);
+	mciSendString(
+		TEXT("open \"res\\sounds\\onoff.wav\" type waveaudio alias ONOFF"),
+		NULL, 0, NULL);
+	mciSendString(
+		TEXT("open \"res\\sounds\\save.wav\" type waveaudio alias SAVE"),
+		NULL, 0, NULL);
+	mciSendString(
+		TEXT("open \"res\\sounds\\jump.wav\" type waveaudio alias JUMP"),
+		NULL, 0, NULL);
+
+	mciSendString(TEXT("play BGM from 0 notify"), NULL, 0, hWnd);
+	mciSendString(TEXT("play END notify"), NULL, 0, hWnd);
+
 
 	//加载图像资源
 	bmp_Title = LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(IDB_BITMAP_TITLE));
@@ -541,13 +569,15 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	for (int i = 0; i < buttons.size(); i++)
 	{
 		Button* button = buttons[i];
-		if (button->visible)
+		if (button->visible && button->buttonID!=BUTTON_LABEL)
 		{
 			if (button->x <= mouseX
 				&& button->x + button->width >= mouseX
 				&& button->y <= mouseY
 				&& button->y + button->height >= mouseY)
 			{
+				if (!silent)
+					mciSendString(TEXT("play BUTTON from 0"), NULL, 0, hWnd);
 				switch (button->buttonID % 100) {
 					case BUTTON_STARTGAME:
 					{
@@ -637,17 +667,59 @@ void LButtonDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						button->buttonID = button->buttonID + BUTTON_SOUND - BUTTON_SILENT;
 						button->img = bmp_SoundButton;
 						silent = false;
-						mciSendString(TEXT("play BGM from 0 to 40000 notify"), NULL, 0, hWnd);
+						switch (currentStage->stageID)
+						{
+							case STAGE_ENDSTORY:
+							{
+								mciSendString(TEXT("resume END"), NULL, 0, hWnd);
+								break;
+							}
+
+							case STAGE_ENDSTORY3:
+							{
+								mciSendString(TEXT("resume END"), NULL, 0, hWnd);
+								break;
+							}
+
+							case STAGE_ENDSTORY2:
+								break;
+
+							default:
+							{
+								mciSendString(TEXT("resume BGM"), NULL, 0, hWnd);
+								break;
+							}
+						}
 						InvalidateRect(hWnd, NULL, FALSE);
 						return;
 					}
 					
-
+					
 					case BUTTON_SOUND:
 					{
 						button->buttonID = button->buttonID - BUTTON_SOUND + BUTTON_SILENT;
 						button->img = bmp_SilentButton;
 						silent = true;
+						switch (currentStage->stageID)
+						{
+							case STAGE_ENDSTORY:
+							{
+								mciSendString(TEXT("pause END"), NULL, 0, hWnd);
+								break;
+							}
+
+							case STAGE_ENDSTORY3:
+							{
+								mciSendString(TEXT("pause END"), NULL, 0, hWnd);
+								break;
+							}
+
+							default:
+							{
+								mciSendString(TEXT("pause BGM"), NULL, 0, hWnd);
+								break;
+							}
+						}
 						InvalidateRect(hWnd, NULL, FALSE);
 						return;
 					}
@@ -702,10 +774,7 @@ void LButtonUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
 void TimerUpdate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	UpdateHero(hWnd); //刷新主角
-	UpdateSurround(hWnd); //刷新环境
-
-	if (!silent && musicon)//静音
-		mciSendString(TEXT("play BGM from 0 to 0 notify"), NULL, 0, hWnd);
+	UpdateSurround(hWnd); //
 
 	//刷新显示
 	InvalidateRect(hWnd, NULL, FALSE);
@@ -813,7 +882,7 @@ void InitButton(HWND hWnd, int stageID)
 			button->img = bmp_PauseButton;
 		}
 
-		if (button->buttonID == 100 * 1000 + BUTTON_SOUND)
+		if (button->buttonID % 100 == BUTTON_SOUND || button->buttonID % 100 == BUTTON_SILENT)
 			button->visible = true;
 	}
 }
@@ -1584,6 +1653,33 @@ void InitStage(HWND hWnd, int stageID)
 	currentStage->timeCountDown = 10000;
 	currentStage->timerOn = true;
 
+	//初始化BGM
+	if (!silent)
+	{
+		switch (stageID)
+		{
+			case STAGE_ENDSTORY:
+				break;
+			case STAGE_ENDSTORY2:
+			{
+				mciSendString(TEXT("pause BGM"), NULL, 0, hWnd);
+				break;
+			}
+			case STAGE_ENDSTORY3:
+			{
+				mciSendString(TEXT("resume END"), NULL, 0, hWnd);
+				break;
+			}
+			case STAGE_STARTMENU:
+			{
+				mciSendString(TEXT("pause END"), NULL, 0, hWnd);
+				mciSendString(TEXT("resume BGM"), NULL, 0, hWnd);
+				break;
+			}
+			default:
+				break;
+		}
+	}
 
 	//初始化背景
 	switch (stageID)
@@ -1714,8 +1810,11 @@ void TrapDetect(HWND hWnd)
 						blocks.push_back(body);
 						delete theHero;
 						theHero = NULL;
+						if (!silent)
+							mciSendString(TEXT("play BLEED from 100 to 500"), NULL, 0, hWnd);
 						return;
 					}
+		
 					case BLOCK_MOVETHORN://移动尖刺判定
 					{
 						body = CreateBlock(1000 * currentStage->stageID + BLOCK_STICKBODY, bmp_BloodBody, HERO_SIZE_X, HERO_SIZE_Y, theHero->x, theHero->y);
@@ -1723,6 +1822,8 @@ void TrapDetect(HWND hWnd)
 						blocks.push_back(body);
 						delete theHero;
 						theHero = NULL;
+						if (!silent)
+							mciSendString(TEXT("play BLEED from 100 to 500"), NULL, 0, hWnd);
 						return;
 					}
 
@@ -1743,6 +1844,8 @@ void TrapDetect(HWND hWnd)
 						blocks.push_back(body);
 						delete theHero;
 						theHero = NULL;
+						if (!silent)
+							mciSendString(TEXT("play ICE from 0 to 1000"), NULL, 0, hWnd);
 						return;
 					}
 
@@ -1755,6 +1858,7 @@ void TrapDetect(HWND hWnd)
 							{
 								case STAGE_5:
 								{
+									mciSendString(TEXT("play FINISH from 0"), NULL, 0, hWnd);
 									InitStage(hWnd, STAGE_ENDSTORY2);
 									lucky = theName->frame;
 									break;
@@ -1812,10 +1916,14 @@ bool CollitionDetect(HWND hWnd)
 					if (abs(herocenterX - blockX) < block->width / 2 + HERO_SIZE_X / 2
 						&& abs(herocenterY - blockY) < block->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
 					{
-						CurrentSave->img = bmp_BlockSave;
-						CurrentSave->frame = 0;
-						block->frame = 1;
-						CurrentSave = block;
+						if (block->frame != 1)
+						{
+							mciSendString(TEXT("play SAVE from 0"), NULL, 0, hWnd);
+							CurrentSave->img = bmp_BlockSave;
+							CurrentSave->frame = 0;
+							block->frame = 1;
+							CurrentSave = block;
+						}
 					}
 					break;
 				}
@@ -1895,21 +2003,27 @@ void UpdateHero(HWND hWnd)
 	if (theHero != NULL)
 		TrapDetect(hWnd);
 
-	 //主角重生
-	if (currentStage->stageID != STAGE_ENDSTORY &&
-		currentStage->stageID != STAGE_STARTSTORY)
+	//主角重生
+	if (theHero == NULL && currentStage->stageID == STAGE_STARTMENU)
+		theHero = CreateHero(bmp_Hero, CurrentSave->x, CurrentSave->y);
+
+	if (currentStage->stageID >= STAGE_1 &&
+		currentStage->stageID <= STAGE_HELP_4)
 	{
-		if ((theHero == NULL) && (currentStage->stageID == STAGE_STARTMENU))
-			theHero = CreateHero(bmp_Hero, CurrentSave->x, CurrentSave->y);
+
 		if ((theHero == NULL) && keySpaceDown)
+		{
 			theHero = CreateHero(bmp_Hero, CurrentSave->x, CurrentSave->y);
+			if (!silent)
+				mciSendString(TEXT("play SAVE from 0"), NULL, 0, hWnd);
+		}
 	}
 
 	if (theHero != NULL) {
 
 		//碰撞检测，判定落地
 		bool onground = CollitionDetect(hWnd);
-	
+
 		//移动判定
 		//y方向速度
 		if (currentStage->stageID == STAGE_STARTMENU)//主界面
@@ -1921,7 +2035,11 @@ void UpdateHero(HWND hWnd)
 		}
 		else {
 			if (keyUpDown && onground) //跳跃
+			{
+				if (!silent)
+					mciSendString(TEXT("play JUMP from 0"), NULL, 0, hWnd);
 				theHero->vy = -10.0;
+			}
 			else if (!onground) //重力
 				theHero->vy += GRAVITION;
 		}
@@ -1930,7 +2048,7 @@ void UpdateHero(HWND hWnd)
 		//x方向速度
 		if (currentStage->stageID == STAGE_STARTMENU)
 		{
-			theHero->vx = HERO_MAXSPEED/2;
+			theHero->vx = HERO_MAXSPEED / 2;
 		}
 		else
 		{
@@ -1945,9 +2063,9 @@ void UpdateHero(HWND hWnd)
 		//计算位移
 		theHero->x += (int)(theHero->vx) + (int)(theHero->basevx);
 		theHero->y += (int)(theHero->vy);
-		
-		
-		
+
+
+
 		//超出地图边界
 		if (theHero->y > WINDOW_HEIGHT ||
 			theHero->y + HERO_SIZE_Y < 0 ||
@@ -2021,6 +2139,7 @@ void BodyTrapDetect(HWND hwnd,Block*body)
 						{
 							body->blockID = 1000 * currentStage->stageID + BLOCK_BURNEDBODY;
 							body->img = bmp_BurnedBody;
+							body->n = 0;
 							return;
 						}
 						default:
@@ -2235,7 +2354,14 @@ void TriggerP(HWND hWnd, Block*pedal)
 		int herocenterY = theHero->y + HERO_SIZE_Y / 2;
 		if (abs(herocenterX - pedalcenterX) <= pedal->width / 2 + HERO_SIZE_X / 2
 			&& abs(herocenterY - pedalcenterY) <= pedal->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
+		{
+			if (!silent&&pedal->m == 0)
+			{
+				mciSendString(TEXT("play ONOFF from 0"), NULL, 0, hWnd);
+				pedal->m = 1;
+			}
 			pedal->img = bmp_BlockPedalon;
+		}
 	}
 
 	for (int i = 0; i < blocks.size(); i++)
@@ -2253,7 +2379,14 @@ void TriggerP(HWND hWnd, Block*pedal)
 			int blockY = blocks[i]->y + BLOCK_SIZE_Y / 2;
 			if (abs(blockX - pedalcenterX) <= pedal->width / 2 + BLOCK_SIZE_X / 2
 				&& abs(blockY - pedalcenterY) <= pedal->height / 2 + BLOCK_SIZE_Y / 2) //判定碰撞
+			{
+				if (!silent&&pedal->m == 0)
+				{
+					mciSendString(TEXT("play ONOFF from 0"), NULL, 0, hWnd);
+					pedal->m = 1;
+				}
 				pedal->img = bmp_BlockPedalon;
+			}
 		}
 	}
 
@@ -2291,6 +2424,8 @@ void TriggerP(HWND hWnd, Block*pedal)
 				}
 		}
 	else
+	{
+		pedal->m = 0;
 		for (int i = 0; i < blocks.size(); i++)
 		{
 			Block* block = blocks[i];
@@ -2323,6 +2458,7 @@ void TriggerP(HWND hWnd, Block*pedal)
 					}
 				}
 		}
+	}
 	return;
 }
 
@@ -2339,6 +2475,8 @@ void TriggerOnOff(HWND hWnd, Block*onoff)
 		if (abs(herocenterX - onoffcenterX) < onoff->width / 2 + HERO_SIZE_X / 2
 			&& abs(herocenterY - onoffcenterY) < onoff->height / 2 + HERO_SIZE_Y / 2) //判定碰撞
 		{
+			if (!silent)
+				mciSendString(TEXT("play ONOFF from 0"), NULL, 0, hWnd);
 			if (onoff->img == bmp_BlockPedalon)
 				onoff->img = bmp_BlockOnoff;
 			else
@@ -2429,6 +2567,12 @@ void UpdateSurround(HWND hWnd)
 				{
 					case BLOCK_BURNEDBODY://燃烧尸体
 					{
+						if (!block->n)
+						{
+							if(!silent)
+								mciSendString(TEXT("play FIRE from 82"), NULL, 0, hWnd);
+							block->n = 1;
+						}
 						block->m++;
 						if (block->m == 5)
 						{
